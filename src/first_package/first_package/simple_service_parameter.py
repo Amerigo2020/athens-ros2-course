@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.parameter import Parameter
 from rcl_interfaces.msg import SetParametersResult
-from example_interfaces.srv import AddTwoInts
+from first_interfaces.srv import ExampleService
 
 
 class AddTwoIntsServer(Node):
@@ -11,7 +11,7 @@ class AddTwoIntsServer(Node):
         self.declare_parameter('extra_term', 10)
         self.add_on_set_parameters_callback(self.parameter_callback)
         self.service = self.create_service(
-            AddTwoInts, 'add_two_ints', self.handle_request
+            ExampleService, 'add_two_ints', self.handle_request
         )
         self.get_logger().info('Service mit Parameter extra_term bereit')
 
