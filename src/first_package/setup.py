@@ -27,6 +27,8 @@ setup(
  		'simple_publisher_node = first_package.simple_publisher:main',
 		'simple_subscriber_node = first_package.simple_subscriber:main',
 		'simple_pubsub_node = first_package.simple_pubsub_node:main',
+        'simple_service = first_package.simple_service:main',
+        'simple_service_parameter = first_package.simple_service_parameter:main',
         ],
     },
 )

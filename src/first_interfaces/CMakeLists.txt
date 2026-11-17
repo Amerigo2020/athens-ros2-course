@@ -10,6 +10,10 @@ find_package(ament_cmake REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
+set(srv_files
+  "srv/ExampleService.srv"
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
@@ -24,6 +28,7 @@ endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ExampleMessage.msg"
+  ${srv_files}
 )
 
 ament_export_dependencies(rosidl_default_runtime)
