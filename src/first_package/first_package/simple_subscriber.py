@@ -1,6 +1,5 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Point
 from first_interfaces.msg import ExampleMessage
 
 
@@ -8,7 +7,7 @@ class MinimalSubscriber(Node):
     def __init__(self):
         super().__init__('subscriber_7')
         self.subscription = self.create_subscription(
-            Point, 'topic_7_out', self.listener_callback, 10
+            ExampleMessage, 'topic_7_out', self.listener_callback, 10
         )
 
     def listener_callback(self, msg):

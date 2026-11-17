@@ -1,14 +1,13 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Point
 from first_interfaces.msg import ExampleMessage
 
 class PubSubNode(Node):
     def __init__(self):
         super().__init__('pubsub_7')
-        self.publisher = self.create_publisher(Point, 'topic_7_out', 10)
+        self.publisher = self.create_publisher(ExampleMessage, 'topic_7_out', 10)
         self.subscription = self.create_subscription(
-            Point, 'topic_7', self.listener_callback, 10
+            ExampleMessage, 'topic_7', self.listener_callback, 10
         )
 
     def listener_callback(self, msg):
@@ -31,3 +30,5 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
+
