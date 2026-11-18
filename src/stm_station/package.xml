@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>stm_station</name><version>0.1.0</version>
+  <description>Serial STM bridge and master slave controller.</description>
+  <maintainer email="athens@todo.todo">WinningLeos</maintainer>
+  <license>Proprietary</license>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>rclpy</exec_depend><exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>stm_interfaces</exec_depend><exec_depend>python3-serial</exec_depend>
+  <test_depend>python3-pytest</test_depend>
+  <export><build_type>ament_python</build_type></export>
+</package>
