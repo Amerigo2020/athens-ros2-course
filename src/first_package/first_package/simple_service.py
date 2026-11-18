@@ -1,13 +1,13 @@
 import rclpy
 from rclpy.node import Node
-from example_interfaces.srv import AddTwoInts
+from first_interfaces.srv import ExampleService
 
 
 class AddTwoIntsServer(Node):
     def __init__(self):
         super().__init__('add_two_ints_server')
         self.service = self.create_service(
-            AddTwoInts, 'add_two_ints', self.handle_request
+            ExampleService, 'add_two_ints', self.handle_request
         )
         self.get_logger().info('Service /add_two_ints bereit')
 
