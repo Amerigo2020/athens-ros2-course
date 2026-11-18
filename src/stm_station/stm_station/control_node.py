@@ -12,7 +12,7 @@ from .protocol import feedback_pwm
 class ControlNode(Node):
     def __init__(self):
         super().__init__('stm_control_node')
-        for name, value in {'master_group_id': 1, 'slave_group_id': 2,
+        for name, value in {'master_group_id': 7, 'slave_group_id': 2,
                             'state_timeout': 0.5, 'pwm_limit': 250.0}.items():
             self.declare_parameter(name, value, ParameterDescriptor(read_only=True))
         master = self.get_parameter('master_group_id').value

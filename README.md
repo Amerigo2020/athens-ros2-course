@@ -1,8 +1,32 @@
-# Athens ROS 2 ? Team WinningLeos
+<div align="center">
+
+# Athens ROS 2 - Team WinningLeos
+
+**Group 7 | ATHENS 2026 | UPM Madrid**
+
+ROS 2 nodes for STM communication, master/slave control and the course deliverables.
+
+[Quickstart](#quickstart) ? [Deliverables](#deliverables) ? [Documentation](#documentation) ? [Tests](#tests-and-acceptance)
+
+</div>
+
+## Table of Contents
+
+- [About](#about)
+- [Deliverables](#deliverables)
+- [Quickstart](#quickstart)
+- [Documentation](#documentation)
+- [D1: STM serial bridge](#d1-stm-serial-bridge)
+- [D2: Master/slave control](#d2-masterslave-control)
+- [Tests and acceptance](#tests-and-acceptance)
+- [Submission evidence](#submission-evidence)
+- [Remaining work](#remaining-work)
+
+## About
 
 ROS 2 workspace with introductory exercises and STM deliverables D1/D2.
 
-## Status
+## Deliverables
 
 | Deliverable | Implementation | Outstanding verification |
 | --- | --- | --- |
@@ -14,12 +38,19 @@ ROS 2 workspace with introductory exercises and STM deliverables D1/D2.
 
 Implementation does not mean hardware acceptance. No STM hardware or ROS installation was available during development. The course templates remain in the separate ROS_course checkout; they are not needed to build this workspace.
 
-## Build (Ubuntu with the course ROS 2 distribution installed)
+## Quickstart
 
-Run from this repository root. Replace `<distro>` with your installed ROS distribution.
+The course environment is **Ubuntu 24.04 with ROS 2 Jazzy** (course VM and Jazzy commands in the slides). Run from the repository root inside that VM. This Windows checkout is not the ROS runtime.
 
 ```bash
-source /opt/ros/<distro>/setup.bash
+git clone https://github.com/Athens-ROS2-Course/Athens-ROS2-Team-WinningLeos.git
+cd Athens-ROS2-Team-WinningLeos
+```
+
+For an existing checkout, use `git pull` from its configured team branch instead.
+
+```bash
+source /opt/ros/jazzy/setup.bash
 rosdep install --from-paths src --ignore-src -r -y
 colcon build --symlink-install
 source install/setup.bash
@@ -27,10 +58,19 @@ source install/setup.bash
 
 Source ROS and `install/setup.bash` in every additional terminal. Give your user access to the serial device, usually through the `dialout` group, and reconnect your session if group membership changes.
 
+## Documentation
+
+- `first_package` and `first_interfaces`: existing Group 7 publisher/subscriber and custom service exercises, carried over from the original repository.
+- `stm_interfaces`: STMState, STMControl and STMSetControlType.
+- `stm_station`: D1 serial bridge and D2 controller.
+- [Course templates](https://github.com/Robolabo/ROS_course): reference implementation scaffolding. Its sample group 1/2 IDs are examples; our station is group 7.
+
+The bridge uses parameters `port` and `baudrate`. The template YAML uses `serial_port` and `baud_rate` and cannot be passed to this node unchanged. Current routing parameters are startup-only.
+
 ## D1: STM serial bridge
 
 ```bash
-ros2 run stm_station stm_serial_node --ros-args -r __ns:=/group_1 -p port:=/dev/ttyACM0
+ros2 run stm_station stm_serial_node --ros-args -r __ns:=/group_7 -p port:=/dev/ttyACM0
 ```
 
 Parameters (startup only): `port` (/dev/ttyACM0), `baudrate` (115200), `loop_frequency` (100.0 Hz), `command_timeout` (0.5 seconds).
@@ -42,9 +82,9 @@ Serial input is newline-terminated UTF-8:
 Commands are `{control_type,setpoint,kp,pwm}` followed by a newline. Firmware modes: 0 stop, 1 onboard position control, 2 PWM. PWM is clamped to +/-250 per the course template. Confirm firmware units, direction and PWM range on the actual station before tuning.
 
 ```bash
-ros2 topic echo /group_1/stm_state
-ros2 topic pub --rate 10 /group_1/stm_control stm_interfaces/msg/STMControl "{control_type: 0}"
-ros2 bag record -o bags/d1 /group_1/stm_state /group_1/stm_control
+ros2 topic echo /group_7/stm_state
+ros2 topic pub --rate 10 /group_7/stm_control stm_interfaces/msg/STMControl "{control_type: 0}"
+ros2 bag record -o bags/d1 /group_7/stm_state /group_7/stm_control
 rqt_graph
 ```
 
@@ -52,11 +92,13 @@ Malformed/nonfinite frames are discarded. Partial lines are buffered. The bridge
 
 ## D2: Master/slave control
 
-Start the second serial bridge in another terminal (use its actual port):
+Our station is **group 7**. The commands below use it as master and **group 2 only as an example partner**. Replace group 2 and its port with your actual slave station. If group 7 is the slave, exchange the IDs accordingly. A second station is required for the physical master/slave demonstration.
+
+Start the group 7 bridge from D1, then the second serial bridge in another terminal (use its actual port):
 
 ```bash
 ros2 run stm_station stm_serial_node --ros-args -r __ns:=/group_2 -p port:=/dev/ttyACM1
-ros2 run stm_station stm_control_node --ros-args -p master_group_id:=1 -p slave_group_id:=2
+ros2 run stm_station stm_control_node --ros-args -p master_group_id:=7 -p slave_group_id:=2
 ```
 
 Run each command in its own terminal. The controller subscribes to both `/group_N/stm_state` topics, publishes `/group_2/stm_control` at 50 Hz, and exposes `/stm_setcontrol_type`.
@@ -96,6 +138,26 @@ On the ROS machine additionally run `colcon test` and `colcon test-result --verb
 4. Save graph, state/command bags and a short demonstration for each deliverable.
 
 Bags are intentionally ignored by Git. Keep recordings in the agreed submission storage and add their links to the hand-in documentation.
+
+## Submission evidence
+
+Store the following under `docs/deliverables/D1/` and `docs/deliverables/D2/`:
+
+- `README.md`: tested commit, date, team members, Ubuntu/ROS version, station IDs/ports, actual commands and gains.
+- A test table with expected behavior, observed behavior and pass/fail for each test.
+- `graph.png`: rqt_graph screenshot showing topics and nodes.
+- `terminal.txt`: build, interface, topic and service outputs.
+- `evidence.md`: accessible links to demonstration videos and bags, including the recording name and what each demonstrates.
+
+```bash
+mkdir -p docs/deliverables/{D1,D2}
+# Run in a dedicated recording terminal, stop cleanly with Ctrl+C:
+ros2 bag record -o bags/d2_run01 /group_7/stm_state /group_2/stm_state /group_2/stm_control
+# After recording:
+ros2 bag info bags/d2_run01 > docs/deliverables/D2/bag-info.txt
+```
+
+Bags and large videos go in the agreed course submission storage; Git currently ignores bags. Test results must reflect actual observations. Mark a deliverable as hardware-verified only after its tests pass, and record the submission date/location separately. Follow the lecturers' requirements for upload or live demonstration; a Git push alone does not establish acceptance.
 
 ## Remaining work
 
