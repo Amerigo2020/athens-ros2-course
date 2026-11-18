@@ -6,3 +6,4 @@ __pycache__/
 bags/
 *.db3
 *.mcap
+.planning/

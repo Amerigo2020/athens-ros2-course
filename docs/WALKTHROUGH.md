@@ -18,11 +18,11 @@ ls -l /dev/serial/by-id/
 
 Use actual device paths. Do not recreate packages; they are already in src. In **every Terminal A/B/C/D** below, cd to the repository and source /opt/ros/jazzy/setup.bash and install/setup.bash. Each long-running command needs its own terminal. Stop the previous task before starting the next: only one serial bridge per USB device, one controller per slave, and one message type per topic. Record before movement and Ctrl+C the recorder to finish its bag cleanly. New bag output directories must not already exist.
 
-For every task, open its README, TEST-RESULTS.md and evidence.md using the links below. Fill tested commit (`git rev-parse HEAD`), tester/date, actual IDs/ports, units, gains and observations. Save small logs/screenshots/parameter dumps in that task folder. Upload bags/large videos to the agreed course storage and paste accessible links in evidence.md. Record actual submission separately; code or a push alone is not a delivered hardware result. [Detailed capture workflow](SETUP.md).
+For every task, open its README, test results section and evidence section using the links below. Fill tested commit (`git rev-parse HEAD`), tester/date, actual IDs/ports, units, gains and observations. Save small logs/screenshots/parameter dumps in that task folder. Upload bags/large videos to the agreed course storage and paste accessible links in evidence section. Record actual submission separately; code or a push alone is not a delivered hardware result. [Detailed capture workflow](SETUP.md).
 
 ## D1.1 - Standard-message publisher
 
-[Task](D1.1/README.md) | [Test log](D1.1/TEST-RESULTS.md) | [Evidence](D1.1/evidence.md)
+[Task](D1.md#d1-1) | [Test log](D1.md#d1-1-tests) | [Evidence](D1.md#d1-1-evidence)
 
 **Prerequisites:** One STM attached and serial permissions configured; previous stages stopped.
 
@@ -53,12 +53,12 @@ rqt_graph
 
 **Stop / cleanup:** Ctrl+C any command publisher; for D1.2/1.3 observe motor stop after approximately 0.5 seconds without commands. Ctrl+C recorder, then bridge; close graph. Run `ros2 bag info bags/d1_1_run01` after recording.
 
-**Hand-in:** State output, node/topic graph, interface types and bag; for command stages include a short response/stop video and measured observations. Save results and links under `docs/deliverables/D1.1/`.
+**Hand-in:** State output, node/topic graph, interface types and bag; for command stages include a short response/stop video and measured observations. Save results and links under `docs/D1/D1.1/`.
 
 
 ## D1.2 - Standard-message publisher and subscriber
 
-[Task](D1.2/README.md) | [Test log](D1.2/TEST-RESULTS.md) | [Evidence](D1.2/evidence.md)
+[Task](D1.md#d1-2) | [Test log](D1.md#d1-2-tests) | [Evidence](D1.md#d1-2-evidence)
 
 **Prerequisites:** One STM attached and serial permissions configured; previous stages stopped.
 
@@ -97,12 +97,12 @@ ros2 topic pub --rate 10 /group_7/stm_control std_msgs/msg/Float32MultiArray "{d
 
 **Stop / cleanup:** Ctrl+C any command publisher; for D1.2/1.3 observe motor stop after approximately 0.5 seconds without commands. Ctrl+C recorder, then bridge; close graph. Run `ros2 bag info bags/d1_2_run01` after recording.
 
-**Hand-in:** State output, node/topic graph, interface types and bag; for command stages include a short response/stop video and measured observations. Save results and links under `docs/deliverables/D1.2/`.
+**Hand-in:** State output, node/topic graph, interface types and bag; for command stages include a short response/stop video and measured observations. Save results and links under `docs/D1/D1.2/`.
 
 
 ## D1.3 - Custom STM interfaces
 
-[Task](D1.3/README.md) | [Test log](D1.3/TEST-RESULTS.md) | [Evidence](D1.3/evidence.md)
+[Task](D1.md#d1-3) | [Test log](D1.md#d1-3-tests) | [Evidence](D1.md#d1-3-evidence)
 
 **Prerequisites:** One STM attached and serial permissions configured; previous stages stopped.
 
@@ -143,12 +143,12 @@ ros2 topic pub --rate 10 /group_7/stm_control stm_interfaces/msg/STMControl "{co
 
 **Stop / cleanup:** Ctrl+C any command publisher; for D1.2/1.3 observe motor stop after approximately 0.5 seconds without commands. Ctrl+C recorder, then bridge; close graph. Run `ros2 bag info bags/d1_3_run01` after recording.
 
-**Hand-in:** State output, node/topic graph, interface types and bag; for command stages include a short response/stop video and measured observations. Save results and links under `docs/deliverables/D1.3/`.
+**Hand-in:** State output, node/topic graph, interface types and bag; for command stages include a short response/stop video and measured observations. Save results and links under `docs/D1/D1.3/`.
 
 
 ## D2.1 - Master/slave onboard position
 
-[Task](D2.1/README.md) | [Test log](D2.1/TEST-RESULTS.md) | [Evidence](D2.1/evidence.md)
+[Task](D2.md#d2-1) | [Test log](D2.md#d2-1-tests) | [Evidence](D2.md#d2-1-evidence)
 
 **Prerequisites:** D1.3 working on two stations, IDs/ports verified, no other controller or manual slave command publisher.
 
@@ -192,12 +192,12 @@ ros2 node info /stm_control_node
 
 **Stop / cleanup:** In Terminal E run `ros2 service call /stm_setcontrol_type stm_interfaces/srv/STMSetControlType "{control_type: 0, kp: 0.0, kd: 0.0}"`. Observe stop. Also test invalid mode 99 (success=false) and interrupted master feedback (stop/disarm; explicit rearm required). Ctrl+C recorder, controller and bridges, in that order.
 
-**Hand-in:** Two state traces, slave command trace, graph and video. Record exact gains/units, firmware, PWM limit and stop/feedback-loss results. For P/PD include plots comparing master and slave. Save results and links under `docs/deliverables/D2.1/`.
+**Hand-in:** Two state traces, slave command trace, graph and video. Record exact gains/units, firmware, PWM limit and stop/feedback-loss results. For P/PD include plots comparing master and slave. Save results and links under `docs/D2/D2.1/`.
 
 
 ## D2.2 - Host position P controller
 
-[Task](D2.2/README.md) | [Test log](D2.2/TEST-RESULTS.md) | [Evidence](D2.2/evidence.md)
+[Task](D2.md#d2-2) | [Test log](D2.md#d2-2-tests) | [Evidence](D2.md#d2-2-evidence)
 
 **Prerequisites:** D1.3 working on two stations, IDs/ports verified, no other controller or manual slave command publisher.
 
@@ -241,12 +241,12 @@ ros2 node info /stm_control_node
 
 **Stop / cleanup:** In Terminal E run `ros2 service call /stm_setcontrol_type stm_interfaces/srv/STMSetControlType "{control_type: 0, kp: 0.0, kd: 0.0}"`. Observe stop. Also test invalid mode 99 (success=false) and interrupted master feedback (stop/disarm; explicit rearm required). Ctrl+C recorder, controller and bridges, in that order.
 
-**Hand-in:** Two state traces, slave command trace, graph and video. Record exact gains/units, firmware, PWM limit and stop/feedback-loss results. For P/PD include plots comparing master and slave. Save results and links under `docs/deliverables/D2.2/`.
+**Hand-in:** Two state traces, slave command trace, graph and video. Record exact gains/units, firmware, PWM limit and stop/feedback-loss results. For P/PD include plots comparing master and slave. Save results and links under `docs/D2/D2.2/`.
 
 
 ## D2.3 - Host impedance PD controller
 
-[Task](D2.3/README.md) | [Test log](D2.3/TEST-RESULTS.md) | [Evidence](D2.3/evidence.md)
+[Task](D2.md#d2-3) | [Test log](D2.md#d2-3-tests) | [Evidence](D2.md#d2-3-evidence)
 
 **Prerequisites:** D1.3 working on two stations, IDs/ports verified, no other controller or manual slave command publisher.
 
@@ -290,12 +290,12 @@ ros2 node info /stm_control_node
 
 **Stop / cleanup:** In Terminal E run `ros2 service call /stm_setcontrol_type stm_interfaces/srv/STMSetControlType "{control_type: 0, kp: 0.0, kd: 0.0}"`. Observe stop. Also test invalid mode 99 (success=false) and interrupted master feedback (stop/disarm; explicit rearm required). Ctrl+C recorder, controller and bridges, in that order.
 
-**Hand-in:** Two state traces, slave command trace, graph and video. Record exact gains/units, firmware, PWM limit and stop/feedback-loss results. For P/PD include plots comparing master and slave. Save results and links under `docs/deliverables/D2.3/`.
+**Hand-in:** Two state traces, slave command trace, graph and video. Record exact gains/units, firmware, PWM limit and stop/feedback-loss results. For P/PD include plots comparing master and slave. Save results and links under `docs/D2/D2.3/`.
 
 
 ## D3.1.0 - Single-station launch
 
-[Task](D3.1.0/README.md) | [Test log](D3.1.0/TEST-RESULTS.md) | [Evidence](D3.1.0/evidence.md)
+[Task](D3.md#d3-1-0) | [Test log](D3.md#d3-1-0-tests) | [Evidence](D3.md#d3-1-0-evidence)
 
 **Prerequisites:** D1.3 working; manual bridge stopped.
 
@@ -320,12 +320,12 @@ ros2 topic echo /group_7/stm_state --once
 
 **Stop / cleanup:** Ctrl+C launch; ensure its bridge exits.
 
-**Hand-in:** Argument output, node info, actual parameters and state transcript. Save results and links under `docs/deliverables/D3.1.0/`.
+**Hand-in:** Argument output, node info, actual parameters and state transcript. Save results and links under `docs/D3/D3.1.0/`.
 
 
 ## D3.1.1 - Launch/config installation
 
-[Task](D3.1.1/README.md) | [Test log](D3.1.1/TEST-RESULTS.md) | [Evidence](D3.1.1/evidence.md)
+[Task](D3.md#d3-1-1) | [Test log](D3.md#d3-1-1-tests) | [Evidence](D3.md#d3-1-1-evidence)
 
 **Prerequisites:** Workspace built and sourced; hardware not needed.
 
@@ -346,12 +346,12 @@ ls "$(ros2 pkg prefix --share stm_station)/rviz"
 
 **Stop / cleanup:** No device or long-running node is started by --show-args.
 
-**Hand-in:** Build output, installed file listing and successful argument listing outside the workspace. Save results and links under `docs/deliverables/D3.1.1/`.
+**Hand-in:** Build output, installed file listing and successful argument listing outside the workspace. Save results and links under `docs/D3/D3.1.1/`.
 
 
 ## D3.2 - Combined launch
 
-[Task](D3.2/README.md) | [Test log](D3.2/TEST-RESULTS.md) | [Evidence](D3.2/evidence.md)
+[Task](D3.md#d3-2) | [Test log](D3.md#d3-2-tests) | [Evidence](D3.md#d3-2-evidence)
 
 **Prerequisites:** Both USB devices available locally, or partner bridge running on the same ROS network. Stop manual bridges/controllers first.
 
@@ -376,14 +376,14 @@ rqt_graph
 
 **Stop / cleanup:** Keep controller in stop, Ctrl+C launch, close graph; stop a separately started partner bridge when finished.
 
-**Hand-in:** Graph, node/parameter/service output, arguments and observed process/motor stop. Save results and links under `docs/deliverables/D3.2/`.
+**Hand-in:** Graph, node/parameter/service output, arguments and observed process/motor stop. Save results and links under `docs/D3/D3.2/`.
 
 
 <a id="d41-tf-rviz"></a>
 
 ## D4.1 - TF and RViz
 
-[Task](D4.1/README.md) | [Test log](D4.1/TEST-RESULTS.md) | [Evidence](D4.1/evidence.md)
+[Task](D4.md#d4-1) | [Test log](D4.md#d4-1-tests) | [Evidence](D4.md#d4-1-evidence)
 
 **Prerequisites:** D1.3 working; stationary STM for startup calibration. Stop any previous bridge, or set start_serial:=false.
 
@@ -414,14 +414,14 @@ ros2 service call /group_7/reset_visualization std_srvs/srv/Trigger "{}"
 
 **Stop / cleanup:** Ctrl+C TF echo and launch. If bridge was started separately, terminate it when finished. Visualization itself sends no motor commands.
 
-**Hand-in:** RViz view, rotation scaling/sign measurement, calibration/reset observations, actual config/units and movement video. Save results and links under `docs/deliverables/D4.1/`.
+**Hand-in:** RViz view, rotation scaling/sign measurement, calibration/reset observations, actual config/units and movement video. Save results and links under `docs/D4/D4.1/`.
 
 
 <a id="d42-plots-recording"></a>
 
 ## D4.2 - Plots and recording
 
-[Task](D4.2/README.md) | [Test log](D4.2/TEST-RESULTS.md) | [Evidence](D4.2/evidence.md)
+[Task](D4.md#d4-2) | [Test log](D4.md#d4-2-tests) | [Evidence](D4.md#d4-2-evidence)
 
 **Prerequisites:** D4.1 running, calibrated and units confirmed.
 
@@ -442,20 +442,21 @@ ros2 run rqt_plot rqt_plot /group_7/stm_position/point/x /group_7/stm_position/p
 **Terminal D:** Save actual configuration; open graph.
 
 ```bash
-ros2 param dump /group_7/stm_visualization_node > docs/deliverables/D4.2/parameters.yaml
+mkdir -p docs/D4/D4.2
+ros2 param dump /group_7/stm_visualization_node > docs/D4/D4.2/parameters.yaml
 rqt_graph
 ```
 
 **Expected:** Position curves and TF/Path correspond to the same timestamped state stream. Document drift instead of claiming absolute accuracy.
 
-**Stop / cleanup:** Ctrl+C recorder, then run `ros2 bag info bags/d4_run01 > docs/deliverables/D4.2/bag-info.txt`. Close plots/graph and stop D4 launch.
+**Stop / cleanup:** Ctrl+C recorder, then run `ros2 bag info bags/d4_run01 > docs/D4/D4.2/bag-info.txt`. Close plots/graph and stop D4 launch.
 
-**Hand-in:** Plot and RViz screenshots, graph, parameters.yaml, bag-info.txt, video and linked bag. Physical evidence is not collected yet. Save results and links under `docs/deliverables/D4.2/`.
+**Hand-in:** Plot and RViz screenshots, graph, parameters.yaml, bag-info.txt, video and linked bag. Physical evidence is not collected yet. Save results and links under `docs/D4/D4.2/`.
 
 
 ## D5.1-simulation - Bug0 in Gazebo - NOT IMPLEMENTED
 
-[Task](D5.1-simulation/README.md) | [Test log](D5.1-simulation/TEST-RESULTS.md) | [Evidence](D5.1-simulation/evidence.md)
+[Task](D5.md#d5-1-simulation) | [Test log](D5.md#d5-1-simulation-tests) | [Evidence](D5.md#d5-1-simulation-evidence)
 
 **Prerequisites:** Course Galileo/Gazebo bringup and documented scan/velocity interface.
 
@@ -472,12 +473,12 @@ ros2 topic info /cmd_vel -v
 
 **Stop / cleanup:** No solution is started by this section. When testing future code, command zero velocity through the confirmed robot interface and stop recorder/controller/bringup according to the course robot instructions.
 
-**Hand-in:** Prepare the linked test/evidence pages now; leave them NOT RUN. After implementation upload the task-specific video/bag and save graph, actual commands, robot version, topic types, limits and observations. Save results and links under `docs/deliverables/D5.1-simulation/`.
+**Hand-in:** Prepare the linked test/evidence pages now; leave them NOT RUN. After implementation upload the task-specific video/bag and save graph, actual commands, robot version, topic types, limits and observations. Save results and links under `docs/D5/D5.1-simulation/`.
 
 
 ## D5.1-real - Real Galileo Bug0 - NOT IMPLEMENTED
 
-[Task](D5.1-real/README.md) | [Test log](D5.1-real/TEST-RESULTS.md) | [Evidence](D5.1-real/evidence.md)
+[Task](D5.md#d5-1-real) | [Test log](D5.md#d5-1-real-tests) | [Evidence](D5.md#d5-1-real-evidence)
 
 **Prerequisites:** Simulation task passed and real robot bringup available.
 
@@ -494,12 +495,12 @@ ros2 topic info /cmd_vel -v
 
 **Stop / cleanup:** No solution is started by this section. When testing future code, command zero velocity through the confirmed robot interface and stop recorder/controller/bringup according to the course robot instructions.
 
-**Hand-in:** Prepare the linked test/evidence pages now; leave them NOT RUN. After implementation upload the task-specific video/bag and save graph, actual commands, robot version, topic types, limits and observations. Save results and links under `docs/deliverables/D5.1-real/`.
+**Hand-in:** Prepare the linked test/evidence pages now; leave them NOT RUN. After implementation upload the task-specific video/bag and save graph, actual commands, robot version, topic types, limits and observations. Save results and links under `docs/D5/D5.1-real/`.
 
 
 ## D5.2 - STM to simulated robot - NOT IMPLEMENTED
 
-[Task](D5.2/README.md) | [Test log](D5.2/TEST-RESULTS.md) | [Evidence](D5.2/evidence.md)
+[Task](D5.md#d5-2) | [Test log](D5.md#d5-2-tests) | [Evidence](D5.md#d5-2-evidence)
 
 **Prerequisites:** Course simulator and verified STM velocity/gyro units.
 
@@ -516,12 +517,12 @@ ros2 topic info /cmd_vel -v
 
 **Stop / cleanup:** No solution is started by this section. When testing future code, command zero velocity through the confirmed robot interface and stop recorder/controller/bringup according to the course robot instructions.
 
-**Hand-in:** Prepare the linked test/evidence pages now; leave them NOT RUN. After implementation upload the task-specific video/bag and save graph, actual commands, robot version, topic types, limits and observations. Save results and links under `docs/deliverables/D5.2/`.
+**Hand-in:** Prepare the linked test/evidence pages now; leave them NOT RUN. After implementation upload the task-specific video/bag and save graph, actual commands, robot version, topic types, limits and observations. Save results and links under `docs/D5/D5.2/`.
 
 
 ## D5-real-stm - STM to real robot - NOT IMPLEMENTED
 
-[Task](D5-real-stm/README.md) | [Test log](D5-real-stm/TEST-RESULTS.md) | [Evidence](D5-real-stm/evidence.md)
+[Task](D5.md#d5-real-stm) | [Test log](D5.md#d5-real-stm-tests) | [Evidence](D5.md#d5-real-stm-evidence)
 
 **Prerequisites:** D5.2 verified plus course real-robot bringup.
 
@@ -538,4 +539,4 @@ ros2 topic info /cmd_vel -v
 
 **Stop / cleanup:** No solution is started by this section. When testing future code, command zero velocity through the confirmed robot interface and stop recorder/controller/bringup according to the course robot instructions.
 
-**Hand-in:** Prepare the linked test/evidence pages now; leave them NOT RUN. After implementation upload the task-specific video/bag and save graph, actual commands, robot version, topic types, limits and observations. Save results and links under `docs/deliverables/D5-real-stm/`.
+**Hand-in:** Prepare the linked test/evidence pages now; leave them NOT RUN. After implementation upload the task-specific video/bag and save graph, actual commands, robot version, topic types, limits and observations. Save results and links under `docs/D5/D5-real-stm/`.

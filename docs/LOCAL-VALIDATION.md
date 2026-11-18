@@ -29,4 +29,4 @@ On this Windows machine setuptools was absent and was installed into a temporary
 
 ROS build, installed launch lookup/parameter application, serial device behavior, master/slave tracking and stop timing, RViz/Gazebo and real robot tests: **NOT RUN**. Course submission: **NOT RECORDED**.
 
-Every task's TEST-RESULTS.md intentionally retains NOT RUN until actual ROS/hardware observations are supplied. These local results cannot be used as physical pass evidence.
+Every task's test results section intentionally retains NOT RUN until actual ROS/hardware observations are supplied. These local results cannot be used as physical pass evidence.
