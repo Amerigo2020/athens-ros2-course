@@ -6,7 +6,7 @@
 
 ROS 2 nodes for STM communication, master/slave control and the course deliverables.
 
-[**Step-by-step deliverables walkthrough**](docs/WALKTHROUGH.md) | [Quickstart](#quickstart) | [Deliverables](#deliverables) | [Documentation](#documentation) | [Tests](#tests-and-acceptance)
+[**Step-by-step deliverables walkthrough**](deliverables/WALKTHROUGH.md) | [Quickstart](#quickstart) | [Deliverables](#deliverables) | [Documentation](#documentation) | [Tests](#tests-and-acceptance)
 
 </div>
 
@@ -20,7 +20,7 @@ ROS 2 nodes for STM communication, master/slave control and the course deliverab
 - [D2: Master/slave control](#d2-masterslave-control)
 - [D3: Launch files](#d3-launch-files)
 - [D4: RViz visualization](#d4-rviz-visualization)
-- [Deliverables walkthrough](docs/WALKTHROUGH.md)
+- [Deliverables walkthrough](deliverables/WALKTHROUGH.md)
 - [Tests and acceptance](#tests-and-acceptance)
 - [Submission evidence](#submission-evidence)
 - [Remaining work](#remaining-work)
@@ -76,9 +76,9 @@ Three separately runnable checkpoints are preserved:
 
 | Task | Executable | State / command type |
 | --- | --- | --- |
-| [D1.1](docs/D1.md#d1-1) | `stm_serial_node_pub` | Float32MultiArray state only |
-| [D1.2](docs/D1.md#d1-2) | `stm_serial_node_pub_sub` | Float32MultiArray state and command |
-| [D1.3](docs/D1.md#d1-3) | `stm_serial_node` | STMState / STMControl |
+| [D1.1](deliverables/D1/D1.md#d1-1) | `stm_serial_node_pub` | Float32MultiArray state only |
+| [D1.2](deliverables/D1/D1.md#d1-2) | `stm_serial_node_pub_sub` | Float32MultiArray state and command |
+| [D1.3](deliverables/D1/D1.md#d1-3) | `stm_serial_node` | STMState / STMControl |
 
 These are reconstructed exercise stages sharing the serial transport. Stop the previous stage before starting the next: one bridge per device, one message type per topic. The commands below use the final D1.3 stage.
 
@@ -164,7 +164,7 @@ Override groups/ports through launch arguments. To change baudrate, frequency, t
 
 ## D4: RViz visualization
 
-[Follow the English walkthrough](docs/WALKTHROUGH.md#d41-tf-rviz) for terminal-by-terminal instructions, expected behavior, cleanup and evidence. Rebuild/source after pulling, then keep the station stationary during startup calibration:
+[Follow the English walkthrough](deliverables/WALKTHROUGH.md#d41-tf-rviz) for terminal-by-terminal instructions, expected behavior, cleanup and evidence. Rebuild/source after pulling, then keep the station stationary during startup calibration:
 
 ```bash
 ros2 launch stm_station stm_visualization_launch.py group_id:=7 port:=/dev/ttyACM0
@@ -176,7 +176,7 @@ This starts the custom bridge, visualization node and saved RViz view. Set start
 ros2 service call /group_7/reset_visualization std_srvs/srv/Trigger "{}"
 ```
 
-The template's defaults are 24 encoder ticks/revolution and gear ratio 9.7. Acceleration is assumed m/s^2; configure acceleration_scale=9.81 for g units through the YAML file. Keep still for 50 offset samples. This fixed-axis integration drifts and does not compensate changing IMU tilt. [D4.1 details](docs/D4.md#d4-1) and [D4.2 plots/recordings](docs/D4.md#d4-2) explain tests and evidence. ROS/hardware operation is not yet verified.
+The template's defaults are 24 encoder ticks/revolution and gear ratio 9.7. Acceleration is assumed m/s^2; configure acceleration_scale=9.81 for g units through the YAML file. Keep still for 50 offset samples. This fixed-axis integration drifts and does not compensate changing IMU tilt. [D4.1 details](deliverables/D4/D4.md#d4-1) and [D4.2 plots/recordings](deliverables/D4/D4.md#d4-2) explain tests and evidence. ROS/hardware operation is not yet verified.
 
 ## Tests and acceptance
 
@@ -197,9 +197,9 @@ Bags are intentionally ignored by Git. Keep recordings in the agreed submission 
 
 ## Submission evidence
 
-The [deliverable index](docs/INDEX.md) maps every task from both PPTX decks to its original template, runnable solution/configuration or planned work. The five D1.md-D5.md documents contain execution instructions, test results and evidence sections for all 15 subtasks. D1.1, D1.2 and D1.3 are separate checkpoints; duplicate D5 numbering and the older D3 subpoints are explained.
+The [deliverable index](deliverables/INDEX.md) maps every task from both PPTX decks to its original template, runnable solution/configuration or planned work. The five D1/D1.md-D5/D5.md documents contain execution instructions, test results and evidence sections for all 15 subtasks. D1.1, D1.2 and D1.3 are separate checkpoints; duplicate D5 numbering and the older D3 subpoints are explained.
 
-[Original templates and provenance](reference/README.md) are archived unchanged; TODO templates are not completed solutions. [Setup and evidence capture](docs/SETUP.md) explains terminal transcripts, bags, graphs, video and submission records. [Local validation](docs/LOCAL-VALIDATION.md) separates local checks from unperformed ROS/hardware tests.
+[Original templates and provenance](reference/README.md) are archived unchanged; TODO templates are not completed solutions. [Setup and evidence capture](deliverables/SETUP.md) explains terminal transcripts, bags, graphs, video and submission records. [Local validation](deliverables/LOCAL-VALIDATION.md) separates local checks from unperformed ROS/hardware tests.
 
 No hardware or course submission is marked passed. Fill the task's actual observations and accessible recording links after testing, then record the required portal upload or live demonstration. Bags remain ignored by Git.
 

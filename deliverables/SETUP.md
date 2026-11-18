@@ -26,8 +26,8 @@ Start exactly one standalone controller from the D2 task page, or stop these pro
 ## Evidence capture
 
 ```bash
-mkdir -p bags docs/D1.1
-script -a docs/D1/D1.1/terminal.txt
+mkdir -p bags deliverables/D1.1
+script -a deliverables/D1/D1.1_terminal.txt
 # Run inspection commands; exit finishes this transcript shell.
 git rev-parse HEAD
 printenv ROS_DISTRO
@@ -45,7 +45,7 @@ Use the task's acceptance list for expected behavior. Include observed behavior,
 Upload bags/large videos to the agreed course storage; verify lecturer access and paste URLs into each evidence section. Commit small logs, screenshots, configuration and completed results:
 
 ```bash
-git add docs README.md
+git add deliverables README.md
 git commit -m "Record actual deliverable verification and hand-in evidence"
 git push team HEAD:main
 ```
