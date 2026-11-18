@@ -8,3 +8,6 @@ bags/
 *.mcap
 .planning/
 /src/simulation_ATHENS2026_st/
+.pytest_cache/
+.venv/
+local-pytest*.txt

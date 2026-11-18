@@ -2,9 +2,9 @@
 
 Source: https://github.com/Robolabo/ROS_course/tree/cf9e122904ebcb55d336aa7e82d0760bc94cbb07/Templates
 
-Revision: `cf9e122904ebcb55d336aa7e82d0760bc94cbb07`. Files in `templates/` were extracted directly from Git blobs in the local `Lab/ROS_course` checkout at this revision, not rewritten from the working tree. `SHA256.json` records each source path and SHA256. All 16 template files are retained byte-for-byte, including incomplete TODOs and syntax errors. No LICENSE file is present at this source revision; this archive attributes the course source and does not relicense it.
+Revision: `cf9e122904ebcb55d336aa7e82d0760bc94cbb07`. The files in templates/ are unchanged copies from this revision. `SHA256.json` records each source path and SHA256. All 16 template files are retained byte-for-byte, including incomplete TODOs and syntax errors. No LICENSE file is present at this source revision; this archive attributes the course source and does not relicense it.
 
-**These files are assignment scaffolding, not completed solutions.** Do not build/run the archive as submitted implementations. `COLCON_IGNORE` keeps it outside colcon package discovery. Runnable team implementations are in `src/`; [the assignment index](../deliverables/INDEX.md) maps each checkpoint to its template and solution.
+**These files are assignment scaffolding, not completed solutions.** Do not build/run the archive as submitted implementations. Runnable team implementations are in `src/`; [the task guides](../README.md#deliverables) maps each checkpoint to its template and solution.
 
 Known differences resolved in team code:
 
