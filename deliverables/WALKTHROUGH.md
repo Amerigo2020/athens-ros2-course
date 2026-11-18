@@ -1,6 +1,6 @@
 # Deliverables walkthrough - Group 7
 
-Work through this guide in order on **Ubuntu 24.04 / ROS 2 Jazzy**. Our station is Group 7. **Group 2 below is an example partner: replace every 2 with your actual partner ID and use its actual port.** Code is implemented through D4; ROS and physical acceptance are still unverified. D5 is pending.
+Work through this guide in order on **Ubuntu 24.04 / ROS 2 Jazzy**. Our station is Group 7. **Group 2 below is an example partner: replace every 2 with your actual partner ID and use its actual port.** Code is implemented through D4 and D5.1 simulation; ROS/Gazebo and physical acceptance are still unverified. The real-robot variants and D5.2 STM mapping are pending.
 
 ## Before every task
 
@@ -342,7 +342,7 @@ ls "$(ros2 pkg prefix --share stm_station)/rviz"
 (cd /tmp && ros2 launch stm_station stm_serial_node_launch.py --show-args)
 ```
 
-**Expected:** Three launch files, serial_params.yaml and stm_config.rviz are installed; --show-args succeeds from /tmp.
+**Expected:** Four launch files, serial_params.yaml and stm_config.rviz are installed; --show-args succeeds from /tmp.
 
 **Stop / cleanup:** No device or long-running node is started by --show-args.
 
@@ -454,35 +454,66 @@ rqt_graph
 **Hand-in:** Plot and RViz screenshots, graph, parameters.yaml, bag-info.txt, video and linked bag. Physical evidence is not collected yet. Save results and links under `deliverables/D4/`.
 
 
-## D5.1-simulation - Bug0 in Gazebo - NOT IMPLEMENTED
+<a id="d51-simulation"></a>
+
+## D5.1-simulation - Bug0 in Gazebo
 
 [Task](D5/D5.md#d5-1-simulation) | [Test log](D5/D5.md#d5-1-simulation-tests) | [Evidence](D5/D5.md#d5-1-simulation-evidence)
 
-**Prerequisites:** Course Galileo/Gazebo bringup and documented scan/velocity interface.
+**Status:** Implemented; ROS/Gazebo behavior NOT RUN here. This is the course-style reactive obstacle exercise. Real robot bringup and the separate STM-to-velocity mapping are still pending.
 
-Implement the Bug0 controller from reference/templates/13_bug0_lidar_stm.py, register its executable, and test free path, obstacle avoidance and missing-scan stop. The course simulator launcher is not included here.
+**Prerequisites:** Build/source this repository and the course simulator; no teleop or other controller may publish velocity simultaneously. No STM needed by default. If `ros2 pkg prefix sim_galileo_gazebo` fails, follow the [pinned simulator setup](D5/D5.md#d5-1-simulation). Each terminal must source Jazzy and the workspace. The simulator is external and is not copied as team solution code.
 
-**Terminal A:** After course bringup, inspect actual interfaces only. These commands do not launch a robot or a missing solution.
+**Terminal A:** Start the course simulator with teleoperation disabled.
 
 ```bash
-ros2 topic list -t
-ros2 topic info /cmd_vel -v
+ros2 launch sim_galileo_gazebo robot_simulation.launch.py use_teleop_gui:=false
 ```
 
-**Expected:** A future simulation test must demonstrate avoidance, resumed motion, stop behavior and correct velocity type.
+**Terminal B:** Check interfaces and controller state; then start our disabled Bug0 node. The default velocity topic follows the actual Jazzy controller, not the `/cmd_vel` Twist bridge.
 
-**Stop / cleanup:** No solution is started by this section. When testing future code, command zero velocity through the confirmed robot interface and stop recorder/controller/bringup according to the course robot instructions.
+```bash
+ros2 topic info /scan -v
+ros2 topic info /diff_drive_controller/cmd_vel -v
+ros2 control list_controllers
+ros2 launch stm_station stm_bug0_launch.py group_id:=7
+```
 
-**Hand-in:** Prepare the linked test/evidence pages now; leave them NOT RUN. After implementation upload the task-specific video/bag and save graph, actual commands, robot version, topic types, limits and observations. Save results and links under `deliverables/D5/`.
+**Terminal C:** Record before movement.
 
+```bash
+ros2 bag record -o bags/d5_1_sim_run01 /scan /diff_drive_controller/cmd_vel /diff_drive_controller/odom /group_7/bug0_state /clock
+```
 
-## D5.1-real - Real Galileo Bug0 - NOT IMPLEMENTED
+**Terminal D:** Enable only once scans are present. Place obstacles in Gazebo and capture forward, turn and resume behavior.
+
+```bash
+ros2 service call /group_7/bug0_enable std_srvs/srv/SetBool "{data: true}"
+ros2 topic echo /group_7/bug0_state --once
+ros2 param dump /group_7/bug0_lidar_stm_node > deliverables/D5/D5.1-simulation_parameters.yaml
+rqt_graph
+```
+
+**Expected:** Fresh valid scans allow success=true on enable. Front >1.0 m -> forward 0.3 m/s; blocked front -> turn +/-0.5 rad/s toward the initially freer side; resume forward once front >1.2 m. Close sides or insufficient scan coverage stop. Invalid/stale/absent scans disarm and require explicit re-enable. State and stamped commands must agree. A pause >0.5 s checks the steady-clock watchdog; unpause and re-enable after scans return. Test several obstacle placements and note configurations where reactive behavior becomes stuck.
+
+**Stop / cleanup:** In Terminal D first disable with the service below. Then Ctrl+C recorder, Bug0 launch and simulator, in that order. Record bag information after recorder closure.
+
+```bash
+ros2 service call /group_7/bug0_enable std_srvs/srv/SetBool "{data: false}"
+ros2 bag info bags/d5_1_sim_run01 > deliverables/D5/D5.1-simulation_bag-info.txt
+```
+
+**Hand-in:** Save `D5.1-simulation_graph.png`, `D5.1-simulation_obstacle.png`, config, transcript and bag-info directly in `deliverables/D5/`. Upload the bag and video to agreed storage and link them in the simulation evidence section. Fill actual tested commit, simulator version, topics, expected/observed behavior and failure cases. Simulation and physical verification remain distinct.
+
+**No simulator available yet?** The [isolated ROS scan check](D5/D5.md#d5-1-simulation) uses `/group_7/test_scan` and `/group_7/test_cmd_vel`, with no hardware output. It checks the implemented node but is not Gazebo evidence. `enable_stm:=true` is optional for a later STM demonstration and must not share a station with another command publisher.
+
+## D5.1-real - Real Galileo Bug0 - NOT VALIDATED
 
 [Task](D5/D5.md#d5-1-real) | [Test log](D5/D5.md#d5-1-real-tests) | [Evidence](D5/D5.md#d5-1-real-evidence)
 
 **Prerequisites:** Simulation task passed and real robot bringup available.
 
-Port the tested Bug0 controller to the actual robot topics/units and course speed limits. No robot bringup or runnable Bug0 solution exists in this repo yet.
+Port the tested Bug0 controller to the actual robot topics/units and course speed limits. The simulation Bug0 controller is available; real-robot bringup and verified hardware configuration are not supplied yet.
 
 **Terminal A:** After course bringup, inspect actual interfaces only. These commands do not launch a robot or a missing solution.
 

@@ -19,7 +19,7 @@ The current assignment source is `Athens2026_ROS2.pptx`. The older `Athens_ROS2_
 | [D3.2](D3/D3.md#d3-2) | Combined serial/control launch | 102 (D3.1 in current slides) | 117 (D3.2) | Implemented; unverified on ROS/hardware |
 | [D4.1](D4/D4.md#d4-1) | TF visualization of STM | 112 (D4.1) | 132 | Implemented/workflow available; ROS and hardware unverified |
 | [D4.2](D4/D4.md#d4-2) | Plot and record visualization results | 112 (D4.2) | 132 (recording requirement) | Planned |
-| [D5.1-simulation](D5/D5.md#d5-1-simulation) | Bug0 navigation in Gazebo | 125 | No equivalent Bug0 deliverable found | Planned |
+| [D5.1-simulation](D5/D5.md#d5-1-simulation) | Bug0 navigation in Gazebo | 125 | No equivalent Bug0 deliverable found | Implemented; ROS/Gazebo unverified |
 | [D5.1-real](D5/D5.md#d5-1-real) | Bug0 on the real Galileo | 128 (also labelled D5.1) | No equivalent Bug0 deliverable found | Planned |
 | [D5.2](D5/D5.md#d5-2) | STM controls simulated robot (starred extension) | 129; repeated as D5 at 133 | 143 (D5) | Planned |
 | [D5-real-stm](D5/D5.md#d5-real-stm) | STM controls real robot (starred extension) | 130 (D5*) | No separate explicit real-STM deliverable found | Planned |
@@ -34,7 +34,7 @@ The current assignment source is `Athens2026_ROS2.pptx`. The older `Athens_ROS2_
 
 ## Traceability and completion
 
-D1/D1.md-D5/D5.md collect every subtask, its runbook, test results and evidence/submission record. The templates intentionally retain TODOs. D1 checkpoints were reconstructed now for clarity; no earlier hardware completion is asserted. D4 TF/RViz and plotting workflow are implemented but have no physical results yet. Code commits are recorded by Git; tested commit IDs must be filled in after real tests.
+D1/D1.md-D5/D5.md collect every subtask, its runbook, test results and evidence/submission record. The templates intentionally retain TODOs. D1 checkpoints were reconstructed now for clarity; no earlier hardware completion is asserted. D4 TF/RViz and D5.1 simulation code are implemented but have no ROS/Gazebo or physical results yet. Code commits are recorded by Git; tested commit IDs must be filled in after real tests.
 
 **No task is currently recorded as delivered or passed on hardware.** A push alone is not course acceptance. Run the documented checks, save results and evidence, and record the actual portal submission or live demonstration required by the lecturers.
 

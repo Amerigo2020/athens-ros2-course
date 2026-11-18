@@ -56,3 +56,15 @@ def test_visualization_constructs_real_ros_actions(serial, rviz, count):
     nodes = module.launch_nodes(context)
     assert len(nodes) == count
     assert all(isinstance(node, Node) for node in nodes)
+
+
+def test_bug0_constructs_one_namespaced_controller():
+    module = load_launch('stm_bug0_launch.py')
+    context = LaunchContext()
+    context.launch_configurations.update({
+        'group_id': '7', 'scan_topic': '/scan',
+        'cmd_vel_topic': '/diff_drive_controller/cmd_vel',
+        'use_sim_time': 'true', 'enable_stm': 'false',
+        'params_file': '/unused/config.yaml'})
+    nodes = module.launch_nodes(context)
+    assert len(nodes) == 1 and isinstance(nodes[0], Node)

@@ -20,6 +20,7 @@ ROS 2 nodes for STM communication, master/slave control and the course deliverab
 - [D2: Master/slave control](#d2-masterslave-control)
 - [D3: Launch files](#d3-launch-files)
 - [D4: RViz visualization](#d4-rviz-visualization)
+- [D5.1: Bug0 simulation](#d51-bug0-simulation)
 - [Deliverables walkthrough](deliverables/WALKTHROUGH.md)
 - [Tests and acceptance](#tests-and-acceptance)
 - [Submission evidence](#submission-evidence)
@@ -37,7 +38,8 @@ ROS 2 workspace with introductory exercises and STM deliverables D1-D4.
 | D2 master/slave and P/PD control | Implemented | ROS integration and two-STM tuning/test |
 | D3 launch files and YAML configuration | Implemented | Installed launch / ROS / hardware tests |
 | D4 TF, bounded Path, RViz and plotting | Implemented | ROS/RViz launch and physical verification; evidence |
-| D5 Gazebo/Bug0/robot | Planned | Implementation |
+| D5.1 Bug0 simulation | Implemented | ROS/Gazebo tests and evidence |
+| D5 real robot and STM mapping | Planned | Bringup/mapping and verification |
 
 Implementation does not mean hardware acceptance. No STM hardware or ROS installation was available during development. Original course templates are archived with provenance in reference/templates; they are not needed to build this workspace.
 
@@ -178,6 +180,25 @@ ros2 service call /group_7/reset_visualization std_srvs/srv/Trigger "{}"
 
 The template's defaults are 24 encoder ticks/revolution and gear ratio 9.7. Acceleration is assumed m/s^2; configure acceleration_scale=9.81 for g units through the YAML file. Keep still for 50 offset samples. This fixed-axis integration drifts and does not compensate changing IMU tilt. [D4.1 details](deliverables/D4/D4.md#d4-1) and [D4.2 plots/recordings](deliverables/D4/D4.md#d4-2) explain tests and evidence. ROS/hardware operation is not yet verified.
 
+## D5.1: Bug0 simulation
+
+[English terminal-by-terminal walkthrough](deliverables/WALKTHROUGH.md#d51-simulation) and [D5 task/test/evidence document](deliverables/D5/D5.md#d5-1-simulation).
+
+The course-style reactive controller uses angle-based LiDAR sectors and stamped velocity commands. It starts disabled, stops/disarms on scan faults and requires explicit re-enable. Pure simulation needs no STM; the optional Group 7 STM output defaults off. Start the external course simulator first:
+
+```bash
+# Terminal A, simulator installed and workspace sourced:
+ros2 launch sim_galileo_gazebo robot_simulation.launch.py use_teleop_gui:=false
+# Terminal B, team workspace sourced:
+ros2 launch stm_station stm_bug0_launch.py group_id:=7
+# Terminal C, after starting recording and confirming scans:
+ros2 service call /group_7/bug0_enable std_srvs/srv/SetBool "{data: true}"
+# Stop explicitly before Ctrl+C cleanup:
+ros2 service call /group_7/bug0_enable std_srvs/srv/SetBool "{data: false}"
+```
+
+Default output is `/diff_drive_controller/cmd_vel` (`TwistStamped`) for the course simulator's Jazzy controller. The upstream simulator also contains a separate `/cmd_vel` Twist bridge; confirm actual subscriber/type before enabling. [D5 details](deliverables/D5/D5.md#d5-1-simulation) include pinned external setup, topics, limitations, isolated synthetic scan tests and recording commands. The simulator dependencies/robot model remain upstream; no successful Gazebo run is claimed here. Real Galileo validation and D5.2 STM mapping remain open.
+
 ## Tests and acceptance
 
 Pure Python protocol/math tests (without ROS):
@@ -205,4 +226,4 @@ No hardware or course submission is marked passed. Fill the task's actual observ
 
 ## Remaining work
 
-D1-D4: ROS build, installed launch/RViz and physical verification plus hand-in evidence. D5: Bug0 in Gazebo, real Galileo validation, optional STM-to-cmd_vel mapping. See Athens2026_ROS2 course slides for the assignment and starred extensions.
+D1-D4: ROS build, installed launch/RViz and physical verification plus hand-in evidence. D5.1: actual Gazebo verification and evidence. Real Galileo validation and D5.2 STM-to-cmd_vel mapping remain to implement/validate. See Athens2026_ROS2 course slides for the assignment and starred extensions.

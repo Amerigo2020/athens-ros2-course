@@ -14,4 +14,5 @@ setup(name='stm_station', version='0.1.0', packages=find_packages(),
           'stm_serial_node_pub_sub = stm_station.standard_serial_node:pubsub_main',
           'stm_serial_node = stm_station.serial_node:main',
           'stm_visualization_node = stm_station.visualization_node:main',
+          'bug0_lidar_stm_node = stm_station.bug0_node:main',
           'stm_control_node = stm_station.control_node:main']})
