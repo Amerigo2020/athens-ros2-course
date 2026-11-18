@@ -1,3 +1,9 @@
+# Course source: https://github.com/Robolabo/ROS_course
+# Upstream revision: cf9e122904ebcb55d336aa7e82d0760bc94cbb07
+# Template: Templates/13_bug0_lidar_stm.py
+# Template: Templates/stm_station_launch.py
+# DONE marks code implementation, not a successful ROS/hardware test.
+# Team launch/helper code adapts the listed course pattern; no separate numbered scaffold exists.
 """D5.1 course controller, independent of simulator process startup."""
 import os
 
@@ -30,6 +36,7 @@ def launch_nodes(context):
                      'enable_stm': arg('enable_stm').lower() == 'true'}])]
 
 
+# Course launch pattern: return a LaunchDescription containing Node actions.
 def generate_launch_description():
     share = get_package_share_directory('stm_station')
     return LaunchDescription([

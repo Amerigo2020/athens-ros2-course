@@ -1,3 +1,8 @@
+# Course source: https://github.com/Robolabo/ROS_course
+# Upstream revision: cf9e122904ebcb55d336aa7e82d0760bc94cbb07
+# Template: Templates/stm_station_launch_all.py
+# DONE marks code implementation, not a successful ROS/hardware test.
+# Team launch/helper code adapts the listed course pattern; no separate numbered scaffold exists.
 """D4 visualization, optional serial bridge and RViz, default Group 7."""
 import os
 
@@ -14,6 +19,8 @@ def launch_nodes(context):
     def arg(name):
         return LaunchConfiguration(name).perform(context)
 
+    # ADAPTATION (original template comment): Read the group ID from the YAML file and build the namespace.
+    # Group ID is supplied as a launch argument in this implementation.
     group_id = int(arg('group_id'))
     group = group_namespace(group_id)
     nodes = [Node(package='stm_station', executable='stm_visualization_node',
@@ -29,6 +36,8 @@ def launch_nodes(context):
                           namespace=group, name='stm_serial_node', output='screen',
                           parameters=[LaunchConfiguration('params_file'),
                               {'port': ParameterValue(arg('port'), value_type=str)}]))
+    # Add this block to launch RViz2:
+    # ADAPTATION: RViz is optional and its saved path topic follows the selected group.
     if arg('start_rviz').lower() == 'true':
         nodes.append(Node(package='rviz2', executable='rviz2', name='stm_rviz',
                           arguments=['-d', LaunchConfiguration('rviz_config')],
@@ -37,6 +46,7 @@ def launch_nodes(context):
     return nodes
 
 
+# Course launch pattern: return a LaunchDescription containing Node actions.
 def generate_launch_description():
     share = get_package_share_directory('stm_station')
     return LaunchDescription([

@@ -1,3 +1,7 @@
+# Course source: https://github.com/Robolabo/ROS_course
+# Upstream revision: cf9e122904ebcb55d336aa7e82d0760bc94cbb07
+# Template: Templates/13_bug0_lidar_stm.py
+# DONE marks code implementation, not a successful ROS/hardware test.
 """Course-style reactive Bug0 decisions, independent of ROS transport."""
 from dataclasses import dataclass
 import math
@@ -5,6 +9,7 @@ from typing import Optional
 
 
 @dataclass(frozen=True)
+# Template 13, step 2.5: latest minimum distance for right, front and left.
 class Sectors:
     right: Optional[float]
     front: Optional[float]
@@ -23,6 +28,7 @@ class Drive:
     state: str = 'stop'
 
 
+# Step 3: Define a helper function to get the minimum valid distance in one LiDAR section
 def scan_sectors(ranges, angle_min, angle_increment, range_min, range_max,
                  min_valid_fraction=0.5):
     """Front +/-30 degrees, left 30..90, right -90..-30 in scan frame.
@@ -34,6 +40,14 @@ def scan_sectors(ranges, angle_min, angle_increment, range_min, range_max,
             or angle_increment == 0 or range_min < 0 or range_max <= range_min
             or not 0 < min_valid_fraction <= 1):
         raise ValueError('Invalid scan geometry or coverage threshold')
+    # Step 4.1: Compute how many LiDAR samples belong to each section
+    # DONE (template TODO): Step 4.2 Split the LiDAR vector into right, front, and left sections
+    # Hint: 10 Hz means a period of 0.1 seconds
+    #   - first third  -> right side
+    #   - middle third -> front
+    #   - last third   -> left side
+    # ADAPTATION: The first/middle/last-third hint assumes a forward-facing scan.
+    # Use scan angles for +/-30 front and 30..90 side sectors in a 360-degree scan.
     counts = [0, 0, 0]
     values = [[], [], []]
     for index, distance in enumerate(ranges):
@@ -53,6 +67,7 @@ def scan_sectors(ranges, angle_min, angle_increment, range_min, range_max,
             values[sector].append(0.0)
         elif math.isfinite(distance) and distance <= range_max:
             values[sector].append(distance)
+    # DONE (template TODO): Step 4.3 Compute the minimum distance in each section
     minima = [min(data) if count and len(data) / count >= min_valid_fraction else None
               for data, count in zip(values, counts)]
     return Sectors(*minima)
@@ -75,6 +90,13 @@ class Bug0Policy:
     def reset(self):
         self.turn = 0
 
+    # DONE (template TODO): Step 5.5 Complete the Bug0 logic
+    # If there is no obstacle in front, move forward using the fixed linear speed
+    # and the forward PWM value.
+    # Otherwise, turn towards the side with more free space using the fixed angular
+    # speed and the turning PWM value.
+    # ADAPTATION: Hysteresis retains a turn until front clearance exceeds release_distance;
+    # missing sectors or insufficient side clearance stop instead of moving blindly.
     def command(self, sectors):
         if sectors is None or not sectors.complete:
             self.reset()
@@ -127,6 +149,7 @@ class ScanWatchdog:
         if not valid:
             self.invalidate()
             return False
+        # DONE (template TODO): Step 4.4 Store the minimum distances in the node variables
         self.sectors, self.received = sectors, wall_time
         self.stamp = stamp if stamp != 0 else None
         return True

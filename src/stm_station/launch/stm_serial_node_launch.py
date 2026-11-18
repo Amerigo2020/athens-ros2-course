@@ -1,3 +1,8 @@
+# Course source: https://github.com/Robolabo/ROS_course
+# Upstream revision: cf9e122904ebcb55d336aa7e82d0760bc94cbb07
+# Template: Templates/stm_station_launch.py
+# DONE marks code implementation, not a successful ROS/hardware test.
+# Team launch/helper code adapts the listed course pattern; no separate numbered scaffold exists.
 """D3.1: one namespaced custom-interface serial bridge."""
 import os
 
@@ -11,6 +16,8 @@ from stm_station.launch_settings import group_namespace
 
 
 def launch_nodes(context):
+    # ADAPTATION (original template comment): Read the group ID from the YAML file and build the namespace.
+    # This launch uses the group_id launch argument; YAML supplies serial settings.
     group = group_namespace(LaunchConfiguration('group_id').perform(context))
     port = LaunchConfiguration('port').perform(context)
     if not port.strip():
@@ -21,6 +28,7 @@ def launch_nodes(context):
                              {'port': ParameterValue(port, value_type=str)}])]
 
 
+# Course launch pattern: return a LaunchDescription containing Node actions.
 def generate_launch_description():
     config = os.path.join(get_package_share_directory('stm_station'),
                           'config', 'serial_params.yaml')
