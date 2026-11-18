@@ -41,3 +41,18 @@ def test_single_station_constructs_real_ros_action():
                                           'params_file': '/unused/config.yaml'})
     nodes = module.launch_nodes(context)
     assert len(nodes) == 1 and isinstance(nodes[0], Node)
+
+
+@pytest.mark.parametrize('serial,rviz,count', [('false', 'false', 1),
+                                              ('true', 'false', 2),
+                                              ('true', 'true', 3)])
+def test_visualization_constructs_real_ros_actions(serial, rviz, count):
+    module = load_launch('stm_visualization_launch.py')
+    context = LaunchContext()
+    context.launch_configurations.update({
+        'group_id': '7', 'port': '/dev/a', 'start_serial': serial,
+        'start_rviz': rviz, 'params_file': '/unused/config.yaml',
+        'rviz_config': '/unused/view.rviz'})
+    nodes = module.launch_nodes(context)
+    assert len(nodes) == count
+    assert all(isinstance(node, Node) for node in nodes)

@@ -4,13 +4,14 @@ Environment: Windows, Python 3.12. No ROS 2 installation or connected STM/robot 
 
 ## Executed checks
 
-- `python -m pytest src/stm_station/test -q`: **21 passed, 1 skipped**. The skipped module constructs real ROS launch actions and requires launch/launch_ros. See the captured [pytest output](local-pytest.txt).
+- `python -m pytest src/stm_station/test -q`: **32 passed, 1 skipped**. The skipped module constructs real ROS launch actions including D4 visualization and requires launch/launch_ros. See the captured [pytest output](local-pytest.txt).
 - `python -m compileall -q src/stm_station`: passed. Original TODO reference templates are intentionally excluded.
+- D4 tests cover stationary offset, encoder/gear conversion, three-axis integration, coasting, reset, invalid values, scaling/deadband and time gaps/reversal. YAML configuration and saved RViz configuration parse successfully. An independent code review reported no actionable findings; this is not runtime verification.
 - All 16 archived template SHA256 hashes matched their manifest; archive content was extracted from upstream Git blobs at cf9e122904ebcb55d336aa7e82d0760bc94cbb07.
 - Local Markdown file links resolve; all package.xml files parse.
 - `git diff --check`: passed for team changes. Original scaffold bytes are preserved separately.
 
-The local checks cover serial parsing, invalid values, standard array command order, P/PD math, saturation, group/port validation and setuptools installation asset declarations. They do not exercise a ROS graph, generated message serialization, a physical serial port or actual installed launch execution.
+The local checks cover serial parsing, invalid values, standard array command order, P/PD math, saturation, group/port validation and setuptools installation asset declarations including the D4 launch and RViz file. They do not exercise a ROS graph, generated message serialization, a physical serial port or actual installed launch execution.
 
 ## Reproduce
 

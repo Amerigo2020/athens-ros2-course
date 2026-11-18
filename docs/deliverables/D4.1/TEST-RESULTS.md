@@ -1,6 +1,6 @@
 # D4.1 test results
 
-Status: **NOT RUN on ROS / hardware**. Implementation is pending. This document contains expected outcomes, not claimed observations.
+Status: **NOT RUN on ROS / hardware**. Implementation/workflow is available; ROS/RViz and hardware observations are pending. This document contains expected outcomes, not claimed observations.
 
 - Tester(s): not recorded
 - Run date/time: not recorded

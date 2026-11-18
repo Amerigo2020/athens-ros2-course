@@ -6,7 +6,7 @@
 
 ROS 2 nodes for STM communication, master/slave control and the course deliverables.
 
-[Quickstart](#quickstart) | [Deliverables](#deliverables) | [Documentation](#documentation) | [Tests](#tests-and-acceptance)
+[**Step-by-step deliverables walkthrough**](docs/deliverables/WALKTHROUGH.md) | [Quickstart](#quickstart) | [Deliverables](#deliverables) | [Documentation](#documentation) | [Tests](#tests-and-acceptance)
 
 </div>
 
@@ -19,13 +19,15 @@ ROS 2 nodes for STM communication, master/slave control and the course deliverab
 - [D1: STM serial bridge](#d1-stm-serial-bridge)
 - [D2: Master/slave control](#d2-masterslave-control)
 - [D3: Launch files](#d3-launch-files)
+- [D4: RViz visualization](#d4-rviz-visualization)
+- [Deliverables walkthrough](docs/deliverables/WALKTHROUGH.md)
 - [Tests and acceptance](#tests-and-acceptance)
 - [Submission evidence](#submission-evidence)
 - [Remaining work](#remaining-work)
 
 ## About
 
-ROS 2 workspace with introductory exercises and STM deliverables D1-D3.
+ROS 2 workspace with introductory exercises and STM deliverables D1-D4.
 
 ## Deliverables
 
@@ -34,7 +36,7 @@ ROS 2 workspace with introductory exercises and STM deliverables D1-D3.
 | D1 serial bridge and custom messages | Implemented | ROS build, STM test, graph and bag |
 | D2 master/slave and P/PD control | Implemented | ROS integration and two-STM tuning/test |
 | D3 launch files and YAML configuration | Implemented | Installed launch / ROS / hardware tests |
-| D4 RViz/TF | Planned | Implementation |
+| D4 TF, bounded Path, RViz and plotting | Implemented | ROS/RViz launch and physical verification; evidence |
 | D5 Gazebo/Bug0/robot | Planned | Implementation |
 
 Implementation does not mean hardware acceptance. No STM hardware or ROS installation was available during development. Original course templates are archived with provenance in reference/templates; they are not needed to build this workspace.
@@ -160,6 +162,22 @@ ros2 launch stm_station stm_serial_control_launch.py --show-args
 
 Override groups/ports through launch arguments. To change baudrate, frequency, timeouts or PWM limit, copy `src/stm_station/config/serial_params.yaml`, edit it and pass `params_file:=/absolute/path/to/config.yaml`. Parameters are startup-only. Launch argument port/group values override configuration. Use stable `/dev/serial/by-id/` paths where available; two aliases of the same device must never be launched together.
 
+## D4: RViz visualization
+
+[Follow the English walkthrough](docs/deliverables/WALKTHROUGH.md#d41-tf-rviz) for terminal-by-terminal instructions, expected behavior, cleanup and evidence. Rebuild/source after pulling, then keep the station stationary during startup calibration:
+
+```bash
+ros2 launch stm_station stm_visualization_launch.py group_id:=7 port:=/dev/ttyACM0
+```
+
+This starts the custom bridge, visualization node and saved RViz view. Set start_serial:=false if the bridge already runs; start_rviz:=false supports headless operation. TF is `world -> group_7/stm_station -> group_7/motor`. The node publishes a bounded Path plus position/velocity topics for plotting. Reset with:
+
+```bash
+ros2 service call /group_7/reset_visualization std_srvs/srv/Trigger "{}"
+```
+
+The template's defaults are 24 encoder ticks/revolution and gear ratio 9.7. Acceleration is assumed m/s^2; configure acceleration_scale=9.81 for g units through the YAML file. Keep still for 50 offset samples. This fixed-axis integration drifts and does not compensate changing IMU tilt. [D4.1 details](docs/deliverables/D4.1/README.md) and [D4.2 plots/recordings](docs/deliverables/D4.2/README.md) explain tests and evidence. ROS/hardware operation is not yet verified.
+
 ## Tests and acceptance
 
 Pure Python protocol/math tests (without ROS):
@@ -187,4 +205,4 @@ No hardware or course submission is marked passed. Fill the task's actual observ
 
 ## Remaining work
 
-D1-D3: ROS build, installed launch and physical verification plus hand-in evidence. D4: TF broadcaster, encoder rotation, IMU integration and saved RViz configuration. D5: Bug0 in Gazebo, real Galileo validation, optional STM-to-cmd_vel mapping. See Athens2026_ROS2 course slides for the assignment and starred extensions.
+D1-D4: ROS build, installed launch/RViz and physical verification plus hand-in evidence. D5: Bug0 in Gazebo, real Galileo validation, optional STM-to-cmd_vel mapping. See Athens2026_ROS2 course slides for the assignment and starred extensions.

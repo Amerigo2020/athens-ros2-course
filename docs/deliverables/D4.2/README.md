@@ -1,40 +1,44 @@
 # D4.2: Plot and record visualization results
 
-[Assignment index](../README.md) | [Test results](TEST-RESULTS.md) | [Evidence](evidence.md)
+[Assignment index](../README.md) | [Walkthrough](../WALKTHROUGH.md#d42-plots-recording) | [Test results](TEST-RESULTS.md) | [Evidence](evidence.md)
 
-## Assignment and source
+Current Athens2026_ROS2.pptx slide 112 (D4.2); older Athens_ROS2_Course.pptx slide 132. Based on [original visualization scaffold](../../../reference/templates/11_stm_visualization.py).
 
-- Current `Athens2026_ROS2.pptx`: slides 112 (D4.2).
-- Older `Athens_ROS2_Course.pptx`: slides 132 (recording requirement).
-- Original scaffold: [11_stm_visualization.py](../../../reference/templates/11_stm_visualization.py), upstream revision `cf9e122904ebcb55d336aa7e82d0760bc94cbb07`.
-- Status: **Planned; no completed solution**.
-
-After D4.1, plot state/estimated motion and record the TF and STM topics. Save the RViz configuration, screenshot/video, bag and an explanation of integration drift. This is the evidence subtask, separate from implementing the broadcaster.
-
-## Team implementation / checkpoint
-
-**Not implemented.** The original TODO template is only a reference.
-
-Implement the task above, add the missing executable/assets and verify them before marking it complete.
+**Recording and plotting workflow available; actual results NOT COLLECTED.** D4.1 publishes `stm_position` (PointStamped, metres), `stm_velocity` (Vector3Stamped, m/s), `stm_path` (Path), plus TF. Implemented telemetry/visualization does not establish physical pose accuracy.
 
 ## Execution
 
-[Prepare the Jazzy environment and ports first](../SETUP.md). Each long-running command needs its own prepared terminal. Start recording before the demonstration, and finish it with Ctrl+C. Only one serial stage may access each physical device at a time.
+Prerequisite: [D4.1](../D4.1/README.md) running and calibrated with verified sensor units. All terminals must source Jazzy and the workspace.
+
+Terminal B, before demonstrating motion:
 
 ```bash
-# Prerequisite: implement and run D4.1 first.
-ros2 bag record -o bags/d4_run01 /group_7/stm_state /tf /tf_static
-rqt_graph
-# After clean Ctrl+C:
-ros2 bag info bags/d4_run01
+ros2 bag record -o bags/d4_run01 /group_7/stm_state /group_7/stm_position /group_7/stm_velocity /group_7/stm_path /tf /tf_static
 ```
 
+Terminal C:
 
+```bash
+ros2 run rqt_plot rqt_plot /group_7/stm_position/point/x /group_7/stm_position/point/y /group_7/stm_position/point/z
+```
 
-## Acceptance and hand-in
+Terminal D:
 
-1. Bag contains moving transforms and source state; inspect timestamps.
-2. Saved RViz screenshot/video and plots explain translation and motor rotation.
-3. Document measured drift/limitations instead of claiming absolute positioning accuracy.
+```bash
+rqt_graph
+ros2 param dump /group_7/stm_visualization_node > docs/deliverables/D4.2/parameters.yaml
+```
 
-Record observed results in TEST-RESULTS.md and attach accessible evidence in evidence.md. Implementation, verified operation and actual submission are separate statuses. Follow the lecturers' upload/live-demo requirements.
+Move the station along one axis without tilting, return it to rest, and rotate the motor. Capture RViz/plot screenshots and a short video; record units, calibration interval, duration and observed drift. Do not claim that drift-free absolute positioning was achieved. D4 reset clears estimation only and sends no motor command.
+
+Stop the recorder with Ctrl+C and then:
+
+```bash
+ros2 bag info bags/d4_run01 > docs/deliverables/D4.2/bag-info.txt
+```
+
+Close plot/graph windows and stop D4 launch with Ctrl+C. To inspect a bag later, stop live producers first; ros2 bag play bags/d4_run01 republishes recorded topics and must not be mixed with a live TF producer for the same frames.
+
+## Evidence and submission
+
+Save small screenshots, parameter dump, transcript and bag-info.txt here; upload bags/large videos to the agreed course storage. Paste accessible URLs in evidence.md. TEST-RESULTS.md must describe actual plot/TF/recording observations, tested commit, hardware and drift. Mark submission separately after the required portal upload or live demonstration.

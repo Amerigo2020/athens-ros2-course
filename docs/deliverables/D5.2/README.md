@@ -23,7 +23,7 @@ Implement the task above, add the missing executable/assets and verify them befo
 
 ```bash
 # Planned executable: NOT IMPLEMENTED; requires course simulator bringup.
-ros2 run stm_station stm_turtlebot_control --ros-args -r __ns:=/group_7
+# No stm_turtlebot_control executable exists yet. Implement it before running this task.
 # After implementation, inspect and record the actual mapped topics:
 ros2 topic info /cmd_vel -v
 ros2 bag record -o bags/d5_2_run01 /group_7/stm_state /cmd_vel

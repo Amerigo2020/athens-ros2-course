@@ -1,6 +1,6 @@
 # Course deliverables - Group 7 / WinningLeos
 
-[Repository README](../../README.md) | [Setup and evidence workflow](SETUP.md) | [Local validation](LOCAL-VALIDATION.md) | [Original templates](../../reference/README.md) | [Deck provenance](COURSE-SOURCES.md)
+[Repository README](../../README.md) | [Step-by-step English walkthrough](WALKTHROUGH.md) | [Setup and evidence workflow](SETUP.md) | [Local validation](LOCAL-VALIDATION.md) | [Original templates](../../reference/README.md) | [Deck provenance](COURSE-SOURCES.md)
 
 The current assignment source is `Athens2026_ROS2.pptx`. The older `Athens_ROS2_Course.pptx` is also mapped to retain its additional subpoints. Slide numbers are PPTX slide numbers; overview slides are included where relevant. Original decks remain in the local course Material folder; they are not redistributed in this repository.
 
@@ -17,7 +17,7 @@ The current assignment source is `Athens2026_ROS2.pptx`. The older `Athens_ROS2_
 | [D3.1.0](D3.1.0/README.md) | Single-station launch | 102 (combined D3 assignment) | 115 (D3.1.0) | Implemented; unverified on ROS/hardware |
 | [D3.1.1](D3.1.1/README.md) | Install launch and configuration assets | 102 (combined D3 assignment) | 116 (D3.1.1) | Implemented; unverified on ROS/hardware |
 | [D3.2](D3.2/README.md) | Combined serial/control launch | 102 (D3.1 in current slides) | 117 (D3.2) | Implemented; unverified on ROS/hardware |
-| [D4.1](D4.1/README.md) | TF visualization of STM | 112 (D4.1) | 132 | Planned |
+| [D4.1](D4.1/README.md) | TF visualization of STM | 112 (D4.1) | 132 | Implemented/workflow available; ROS and hardware unverified |
 | [D4.2](D4.2/README.md) | Plot and record visualization results | 112 (D4.2) | 132 (recording requirement) | Planned |
 | [D5.1-simulation](D5.1-simulation/README.md) | Bug0 navigation in Gazebo | 125 | No equivalent Bug0 deliverable found | Planned |
 | [D5.1-real](D5.1-real/README.md) | Bug0 on the real Galileo | 128 (also labelled D5.1) | No equivalent Bug0 deliverable found | Planned |
@@ -34,6 +34,6 @@ The current assignment source is `Athens2026_ROS2.pptx`. The older `Athens_ROS2_
 
 ## Traceability and completion
 
-Each task has README.md (assignment/template/solution/runbook), TEST-RESULTS.md (actual observations) and evidence.md (artifacts/submission). The templates intentionally retain TODOs. D1 checkpoints were reconstructed now for clarity; no earlier hardware completion is asserted. Code commits are recorded by Git; tested commit IDs must be filled in after real tests.
+Each task has README.md (assignment/template/solution/runbook), TEST-RESULTS.md (actual observations) and evidence.md (artifacts/submission). The templates intentionally retain TODOs. D1 checkpoints were reconstructed now for clarity; no earlier hardware completion is asserted. D4 TF/RViz and plotting workflow are implemented but have no physical results yet. Code commits are recorded by Git; tested commit IDs must be filled in after real tests.
 
 **No task is currently recorded as delivered or passed on hardware.** A push alone is not course acceptance. Run the documented checks, save results and evidence, and record the actual portal submission or live demonstration required by the lecturers.
