@@ -27,3 +27,12 @@ def encode_control(mode, setpoint, kp, pwm):
 def feedback_pwm(master, slave, kp, kd, limit):
     result = kp * (master[0] - slave[0]) + kd * (master[1] - slave[1])
     return max(-limit, min(limit, result))
+
+
+def standard_control_values(data):
+    """D1.2 array: [mode, setpoint, kp, pwm], rejecting fractional modes."""
+    if len(data) != 4 or data[0] not in (0.0, 1.0, 2.0):
+        raise ValueError('Expected [mode (0/1/2), setpoint, kp, pwm]')
+    values = (int(data[0]), *data[1:])
+    encode_control(*values)  # Validate before passing to the serial transport.
+    return values

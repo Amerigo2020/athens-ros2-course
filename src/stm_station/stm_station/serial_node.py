@@ -10,7 +10,10 @@ from .protocol import parse_state, encode_control
 
 
 class SerialNode(Node):
-    def __init__(self):
+    state_message_type = STMState
+    control_message_type = STMControl
+
+    def __init__(self, enable_control=True):
         super().__init__('stm_serial_node')
         defaults = {'port': '/dev/ttyACM0', 'baudrate': 115200,
                     'loop_frequency': 100.0, 'command_timeout': 0.5}
@@ -26,19 +29,33 @@ class SerialNode(Node):
         self.buffer = bytearray()
         self.last_command = time.monotonic()
         self.active = False
-        self.publisher = self.create_publisher(STMState, 'stm_state', 10)
-        self.subscription = self.create_subscription(STMControl, 'stm_control', self.control, 10)
+        self.publisher = self.create_publisher(self.state_message_type, 'stm_state', 10)
+        if enable_control:
+            self.subscription = self.create_subscription(
+                self.control_message_type, 'stm_control', self.control, 10)
         self.timer = self.create_timer(1.0 / frequency, self.tick)
 
     def control(self, msg):
         try:
-            command = encode_control(msg.control_type, msg.setpoint, msg.kp, msg.pwm)
+            values = self.control_values(msg)
+            command = encode_control(*values)
             self.device.write(command)
             self.last_command = time.monotonic()
-            self.active = msg.control_type != 0
+            self.active = values[0] != 0
         except (ValueError, serial.SerialException) as exc:
             self.get_logger().error(str(exc))
             self.stop()
+
+    def control_values(self, msg):
+        return msg.control_type, msg.setpoint, msg.kp, msg.pwm
+
+    def state_message(self, values):
+        msg = self.state_message_type()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.header.frame_id = self.get_namespace().strip('/') + '/stm'
+        for name, value in values.items():
+            setattr(msg, name, value)
+        return msg
 
     def stop(self):
         self.active = False
@@ -57,12 +74,7 @@ class SerialNode(Node):
                 self.buffer = bytearray(rest)
                 try:
                     values = parse_state(line)
-                    msg = STMState()
-                    msg.header.stamp = self.get_clock().now().to_msg()
-                    msg.header.frame_id = self.get_namespace().strip('/') + '/stm'
-                    for name, value in values.items():
-                        setattr(msg, name, value)
-                    self.publisher.publish(msg)
+                    self.publisher.publish(self.state_message(values))
                 except (ValueError, UnicodeError) as exc:
                     self.get_logger().warning(f'Discarding serial frame: {exc}')
             if len(self.buffer) > 4096:
@@ -78,10 +90,14 @@ class SerialNode(Node):
 
 
 def main(args=None):
+    run_node(SerialNode, args)
+
+
+def run_node(factory, args=None):
     rclpy.init(args=args)
     node = None
     try:
-        node = SerialNode()
+        node = factory()
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass

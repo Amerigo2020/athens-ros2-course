@@ -6,7 +6,7 @@
 
 ROS 2 nodes for STM communication, master/slave control and the course deliverables.
 
-[Quickstart](#quickstart) ? [Deliverables](#deliverables) ? [Documentation](#documentation) ? [Tests](#tests-and-acceptance)
+[Quickstart](#quickstart) | [Deliverables](#deliverables) | [Documentation](#documentation) | [Tests](#tests-and-acceptance)
 
 </div>
 
@@ -18,13 +18,14 @@ ROS 2 nodes for STM communication, master/slave control and the course deliverab
 - [Documentation](#documentation)
 - [D1: STM serial bridge](#d1-stm-serial-bridge)
 - [D2: Master/slave control](#d2-masterslave-control)
+- [D3: Launch files](#d3-launch-files)
 - [Tests and acceptance](#tests-and-acceptance)
 - [Submission evidence](#submission-evidence)
 - [Remaining work](#remaining-work)
 
 ## About
 
-ROS 2 workspace with introductory exercises and STM deliverables D1/D2.
+ROS 2 workspace with introductory exercises and STM deliverables D1-D3.
 
 ## Deliverables
 
@@ -32,11 +33,11 @@ ROS 2 workspace with introductory exercises and STM deliverables D1/D2.
 | --- | --- | --- |
 | D1 serial bridge and custom messages | Implemented | ROS build, STM test, graph and bag |
 | D2 master/slave and P/PD control | Implemented | ROS integration and two-STM tuning/test |
-| D3 launch files | Planned | Implementation |
+| D3 launch files and YAML configuration | Implemented | Installed launch / ROS / hardware tests |
 | D4 RViz/TF | Planned | Implementation |
 | D5 Gazebo/Bug0/robot | Planned | Implementation |
 
-Implementation does not mean hardware acceptance. No STM hardware or ROS installation was available during development. The course templates remain in the separate ROS_course checkout; they are not needed to build this workspace.
+Implementation does not mean hardware acceptance. No STM hardware or ROS installation was available during development. Original course templates are archived with provenance in reference/templates; they are not needed to build this workspace.
 
 ## Quickstart
 
@@ -62,12 +63,22 @@ Source ROS and `install/setup.bash` in every additional terminal. Give your user
 
 - `first_package` and `first_interfaces`: existing Group 7 publisher/subscriber and custom service exercises, carried over from the original repository.
 - `stm_interfaces`: STMState, STMControl and STMSetControlType.
-- `stm_station`: D1 serial bridge and D2 controller.
+- `stm_station`: D1 checkpoints, D2 controller and installed D3 launches.
 - [Course templates](https://github.com/Robolabo/ROS_course): reference implementation scaffolding. Its sample group 1/2 IDs are examples; our station is group 7.
 
-The bridge uses parameters `port` and `baudrate`. The template YAML uses `serial_port` and `baud_rate` and cannot be passed to this node unchanged. Current routing parameters are startup-only.
+The bridge uses parameters `port` and `baudrate`. The original template YAML uses `serial_port` and `baud_rate` and cannot be passed unchanged. The installed team YAML in `src/stm_station/config/` uses our actual parameter names. Current routing parameters are startup-only.
 
 ## D1: STM serial bridge
+
+Three separately runnable checkpoints are preserved:
+
+| Task | Executable | State / command type |
+| --- | --- | --- |
+| [D1.1](docs/deliverables/D1.1/README.md) | `stm_serial_node_pub` | Float32MultiArray state only |
+| [D1.2](docs/deliverables/D1.2/README.md) | `stm_serial_node_pub_sub` | Float32MultiArray state and command |
+| [D1.3](docs/deliverables/D1.3/README.md) | `stm_serial_node` | STMState / STMControl |
+
+These are reconstructed exercise stages sharing the serial transport. Stop the previous stage before starting the next: one bridge per device, one message type per topic. The commands below use the final D1.3 stage.
 
 ```bash
 ros2 run stm_station stm_serial_node --ros-args -r __ns:=/group_7 -p port:=/dev/ttyACM0
@@ -122,6 +133,33 @@ ros2 service call /stm_setcontrol_type stm_interfaces/srv/STMSetControlType "{co
 
 Use a single command publisher for the slave. Start in stop mode. Arm only after both state streams are present. Missing/stale feedback (> `state_timeout`, default 0.5 seconds) stops and disarms the controller; call the service again after feedback resumes. Invalid service requests stop and return success=false. `pwm_limit` defaults to 250.0 and can be reduced at startup. Group IDs must be distinct positive integers. All controller parameters are startup-only; restart to change group routing.
 
+## D3: Launch files
+
+Rebuild and source the workspace after pulling. The installed YAML defaults to 115200 baud, 100 Hz serial polling, 0.5 s timeouts and a reduced controller PWM limit of 25.0. This limit applies to host PWM mode; onboard position control uses firmware behavior.
+
+```bash
+# Single Group 7 station:
+ros2 launch stm_station stm_serial_node_launch.py group_id:=7 port:=/dev/ttyACM0
+
+# Alternative: master bridge plus controller; partner runs its bridge separately.
+# Group 2 is an example; replace it with the actual partner group.
+ros2 launch stm_station stm_serial_control_launch.py master_group_id:=7 slave_group_id:=2
+
+# Alternative: both USB devices are on this machine:
+ros2 launch stm_station stm_serial_control_launch.py master_group_id:=7 slave_group_id:=2 start_slave:=true master_port:=/dev/ttyACM0 slave_port:=/dev/ttyACM1
+```
+
+Choose one setup, not all at once. The combined launch puts the controller under the master's namespace: its service is **`/group_7/stm_setcontrol_type`**, whereas standalone `ros2 run` examples above use `/stm_setcontrol_type`. Both start in stop mode.
+
+```bash
+# In a separate prepared terminal after the combined launch:
+ros2 service call /group_7/stm_setcontrol_type stm_interfaces/srv/STMSetControlType "{control_type: 0, kp: 0.0, kd: 0.0}"
+ros2 param get /group_7/stm_control_node pwm_limit
+ros2 launch stm_station stm_serial_control_launch.py --show-args
+```
+
+Override groups/ports through launch arguments. To change baudrate, frequency, timeouts or PWM limit, copy `src/stm_station/config/serial_params.yaml`, edit it and pass `params_file:=/absolute/path/to/config.yaml`. Parameters are startup-only. Launch argument port/group values override configuration. Use stable `/dev/serial/by-id/` paths where available; two aliases of the same device must never be launched together.
+
 ## Tests and acceptance
 
 Pure Python protocol/math tests (without ROS):
@@ -141,24 +179,12 @@ Bags are intentionally ignored by Git. Keep recordings in the agreed submission 
 
 ## Submission evidence
 
-Store the following under `docs/deliverables/D1/` and `docs/deliverables/D2/`:
+The [deliverable index](docs/deliverables/README.md) maps every task from both PPTX decks to its original template, runnable solution/configuration or planned work. Each of the 15 task folders has execution instructions, `TEST-RESULTS.md` and `evidence.md`. D1.1, D1.2 and D1.3 are separate checkpoints; duplicate D5 numbering and the older D3 subpoints are explained.
 
-- `README.md`: tested commit, date, team members, Ubuntu/ROS version, station IDs/ports, actual commands and gains.
-- A test table with expected behavior, observed behavior and pass/fail for each test.
-- `graph.png`: rqt_graph screenshot showing topics and nodes.
-- `terminal.txt`: build, interface, topic and service outputs.
-- `evidence.md`: accessible links to demonstration videos and bags, including the recording name and what each demonstrates.
+[Original templates and provenance](reference/README.md) are archived unchanged; TODO templates are not completed solutions. [Setup and evidence capture](docs/deliverables/SETUP.md) explains terminal transcripts, bags, graphs, video and submission records. [Local validation](docs/deliverables/LOCAL-VALIDATION.md) separates local checks from unperformed ROS/hardware tests.
 
-```bash
-mkdir -p docs/deliverables/{D1,D2}
-# Run in a dedicated recording terminal, stop cleanly with Ctrl+C:
-ros2 bag record -o bags/d2_run01 /group_7/stm_state /group_2/stm_state /group_2/stm_control
-# After recording:
-ros2 bag info bags/d2_run01 > docs/deliverables/D2/bag-info.txt
-```
-
-Bags and large videos go in the agreed course submission storage; Git currently ignores bags. Test results must reflect actual observations. Mark a deliverable as hardware-verified only after its tests pass, and record the submission date/location separately. Follow the lecturers' requirements for upload or live demonstration; a Git push alone does not establish acceptance.
+No hardware or course submission is marked passed. Fill the task's actual observations and accessible recording links after testing, then record the required portal upload or live demonstration. Bags remain ignored by Git.
 
 ## Remaining work
 
-D3: installed launch files and shared configuration. D4: TF broadcaster, encoder rotation, IMU integration and saved RViz configuration. D5: Bug0 in Gazebo, real Galileo validation, optional STM-to-cmd_vel mapping. See Athens2026_ROS2 course slides for the assignment and starred extensions.
+D1-D3: ROS build, installed launch and physical verification plus hand-in evidence. D4: TF broadcaster, encoder rotation, IMU integration and saved RViz configuration. D5: Bug0 in Gazebo, real Galileo validation, optional STM-to-cmd_vel mapping. See Athens2026_ROS2 course slides for the assignment and starred extensions.

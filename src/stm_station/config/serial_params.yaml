@@ -1,0 +1,12 @@
+# D3 configuration. Group IDs and ports are launch arguments.
+# These parameter names match our implementation, not the upstream TODO YAML.
+/**/stm_serial_node:
+  ros__parameters:
+    baudrate: 115200
+    loop_frequency: 100.0
+    command_timeout: 0.5
+
+/**/stm_control_node:
+  ros__parameters:
+    state_timeout: 0.5
+    pwm_limit: 25.0
