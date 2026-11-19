@@ -25,7 +25,7 @@ Verglichen wird mit den lokalen Kursvorlagen. `templates/SHA256.json` enthält d
 | [src/stm_station/stm_station/control_master_slave.py](../src/stm_station/stm_station/control_master_slave.py) | [8_stm_control_node_master_slave.py](../templates/8_stm_control_node_master_slave.py) |
 | [src/stm_station/stm_station/control_position.py](../src/stm_station/stm_station/control_position.py) | [9_stm_control_node_master_slave_poscontrol.py](../templates/9_stm_control_node_master_slave_poscontrol.py) |
 | [src/stm_station/stm_station/control_node.py](../src/stm_station/stm_station/control_node.py) | [10_stm_control_node_master_slave_impedance_control.py](../templates/10_stm_control_node_master_slave_impedance_control.py) |
-| [src/stm_station/stm_station/visualization_node.py](../src/stm_station/stm_station/visualization_node.py) | [11_stm_visualization.py](../templates/11_stm_visualization.py) |
+| [src/stm_station/stm_station/11_stm_visualization.py](../src/stm_station/stm_station/11_stm_visualization.py) | [11_stm_visualization.py](../templates/11_stm_visualization.py) |
 | [src/stm_station/stm_station/turtlebot_control.py](../src/stm_station/stm_station/turtlebot_control.py) | [12_stm_turtlebot_control.py](../templates/12_stm_turtlebot_control.py) |
 | [src/stm_station/stm_station/bug0_node.py](../src/stm_station/stm_station/bug0_node.py) | [13_bug0_lidar_stm.py](../templates/13_bug0_lidar_stm.py) |
 | [src/stm_station/launch/stm_station_launch.py](../src/stm_station/launch/stm_station_launch.py) | [stm_station_launch.py](../templates/stm_station_launch.py) |
@@ -118,7 +118,7 @@ TODOs / Anpassung: Wie Vorlage 9; zusätzlich Geschwindigkeiten in den Zustands-
 
 Notwendige Abweichungen / Grenzen: Falschen Logzugriff korrigiert und Slave-Zustand beim Gruppenwechsel aktualisiert wie bei Vorlage 9. Zwei Geschwindigkeitswerte mit 0 initialisiert. request.kd liest das bereits bestehende Servicefeld für den in der Vorlage kv genannten Faktor; lokale kv-Namen bleiben erhalten.
 
-### `src/stm_station/stm_station/visualization_node.py`
+### `src/stm_station/stm_station/11_stm_visualization.py`
 
 Vorlage: [`11_stm_visualization.py`](../templates/11_stm_visualization.py).
 
@@ -215,7 +215,7 @@ Notwendige Abweichungen / Grenzen: Keine; beide Werte müssen zur eigenen Gruppe
 | [src/stm_station/stm_station/__init__.py](../src/stm_station/stm_station/__init__.py) | Python-Paketdatei, keine Kursvorlage. Unverändert. |
 | [src/stm_station/stm_station/bug0.py](../src/stm_station/stm_station/bug0.py) | Zusatzcode der früheren Umsetzung, keine direkte Vorlage. Frühere ausgelagerte Bug0-Logik; nicht vom aktuellen bug0_node importiert. Unverändert belassen. |
 | [src/stm_station/stm_station/launch_settings.py](../src/stm_station/stm_station/launch_settings.py) | Zusatzcode der früheren Umsetzung, keine direkte Vorlage. Frühere Launch-Validierung; nicht von den aktuellen Launch-Dateien importiert. Unverändert belassen. |
-| [src/stm_station/stm_station/motion.py](../src/stm_station/stm_station/motion.py) | Zusatzcode der früheren Umsetzung, keine direkte Vorlage. Früherer MotionEstimate mit zusätzlicher Kalibrierung; nicht vom aktuellen visualization_node importiert. Unverändert belassen. |
+| [src/stm_station/stm_station/motion.py](../src/stm_station/stm_station/motion.py) | Zusatzcode der früheren Umsetzung, keine direkte Vorlage. Früherer MotionEstimate mit zusätzlicher Kalibrierung; nicht vom aktuellen 11_stm_visualization importiert. Unverändert belassen. |
 | [src/stm_station/stm_station/protocol.py](../src/stm_station/stm_station/protocol.py) | Zusatzcode der früheren Umsetzung, keine direkte Vorlage. Frühere Parser-/Regler-Hilfslogik; nicht von den aktuellen Vorlagen-Nodes importiert. Unverändert belassen. |
 | [src/stm_station/stm_station/standard_serial_node.py](../src/stm_station/stm_station/standard_serial_node.py) | Zusatzcode der früheren Umsetzung, keine direkte Vorlage. Frühere Stufen-Abstraktion; kein aktueller Einstiegspunkt. Importiert eine nicht mehr vorhandene SerialNode-Klasse und ist daher kein lauffähiger aktueller Node. Unverändert belassen. |
 | [src/stm_station/test/test_bug0.py](../src/stm_station/test/test_bug0.py) | Vorhandener Test-/Gerüstcode, keine nummerierte Kursvorlage. Unverändert; Hilfsmodultests prüfen die frühere Hilfslogik, nicht die aktuellen Node-Callbacks. |

@@ -601,84 +601,82 @@ Submission date / course upload link / demonstration: not recorded.
 
 Use a separate terminal for each running node or recorder. In every terminal, source Jazzy and the workspace as shown in the root README. Record bags before the demonstration and close the recorder with Ctrl+C.
 
-## Units and position estimate
+## Scope (course slide 112)
 
-TF is `world -> group_7/stm_station -> group_7/motor`. Station translation comes from IMU acceleration; motor rotation comes from encoder position. Motor rotation is not the orientation of the IMU body.
+D4.1 uses the course file `11_stm_visualization.py`, installed as the executable `stm_visualization_node`. It subscribes to STMState, integrates acceleration to estimate translation, converts motor encoder ticks to rotation, and broadcasts `world -> group_7/stm_station`. Original template comments are retained. The first measurement supplies the acceleration offset; hold the STM still at startup. The estimate drifts and is not an absolute position measurement.
 
-The template specifies 24 encoder ticks per motor revolution and a gear ratio of 9.7. Yaw is `ticks * 2*pi / (24*9.7)`. Check tick decoding on the device; set encoder_direction=-1.0 if needed.
-
-Keep the station still for the first 50 samples to calibrate acceleration offset. Default acceleration_scale=1.0 assumes m/s^2; use 9.81 if firmware reports g. These settings are in serial_params.yaml. Integration uses sample timestamps; duplicate stamps are skipped, and time reversal or gaps over 0.2 seconds clear velocity without integrating the gap.
-
-A 0.5 m/s^2 deadband filters small corrected accelerations. Existing velocity still contributes to position. The estimate drifts and does not compensate changing gravity direction when the station tilts. Keep sensor axes fixed during translation tests. Reset while stationary to clear position/path and recalibrate. The path keeps at most 1000 samples.
+D4.2 requires observing, plotting and recording the results. No extra Path publisher or reset service is required by slide 112. The optional course launch `stm_station_launch_all.py` also starts the controller; use the separate commands below for the D4 demonstration.
 
 <a id="d4-1"></a>
 
 ## D4.1 - TF and RViz
 
-**Prerequisites:** D1.3 working; stationary STM for startup calibration. Stop any previous bridge, or set start_serial:=false.
-
-Start visualization, keep the device still for the first 50 samples, then rotate the motor and translate without tilting. Confirm encoder and acceleration units from firmware.
-
-**Terminal A:** Launch bridge, TF/Path node and saved RViz view.
+Build in the Ubuntu ROS VM from the repository root:
 
 ```bash
-ros2 launch stm_station stm_visualization_launch.py group_id:=7 port:=/dev/ttyACM0
+source /opt/ros/jazzy/setup.bash
+colcon build --symlink-install --packages-up-to stm_station
+source install/setup.bash
 ```
 
-**Terminal B:** Inspect body TF; Ctrl+C before inspecting motor TF.
+In every new terminal, source ROS and `install/setup.bash` from the repository root. Stop previous bridges using the same USB device. Check serial_port and baud_rate in serial_params.yaml first.
+
+**Terminal A ? serial bridge:**
 
 ```bash
-ros2 run tf2_ros tf2_echo world group_7/stm_station
-# After Ctrl+C:
-ros2 run tf2_ros tf2_echo group_7/stm_station group_7/motor
+ros2 run stm_station stm_serial_node --ros-args -r __ns:=/group_7 --params-file src/stm_station/config/serial_params.yaml
 ```
 
-**Terminal C:** Inspect position, reset while stationary, and confirm reset response.
+**Terminal B ? visualization:**
 
 ```bash
-ros2 topic echo /group_7/stm_position --once
-ros2 service call /group_7/reset_visualization std_srvs/srv/Trigger "{}"
+ros2 run stm_station stm_visualization_node --ros-args -r __ns:=/group_7 -p group_id:=7
 ```
 
-**Expected:** Connected world -> group_7/stm_station -> group_7/motor frames; encoder-driven motor yaw; bounded trajectory. Reset returns success=true, clears translation/path and recalibrates. Acceleration integration drifts; changing tilt is not compensated.
+**Terminal C ? RViz:**
 
-**Stop:** Ctrl+C TF echo and launch. If bridge was started separately, terminate it when finished. Visualization itself sends no motor commands.
+```bash
+rviz2
+```
 
-**Save:** RViz view, rotation scaling/sign measurement, calibration/reset observations, actual config/units and movement video. Save results and links in the matching subtask folder under `deliverables/D4/`.
+Set Fixed Frame to `world`, then Add -> TF. Hold the STM still for the first measurement, then rotate the motor and translate the STM while keeping its axes level. Expected: the group_7/stm_station frame changes position and yaw. Encoder conversion is ticks * 2*pi / (24*9.7); verify direction and units on the device.
+
+Save an RViz screenshot and movement observations in deliverables/D4/D4.1/. This is not yet hardware-verified.
 
 <a id="d4-2"></a>
 
-## D4.2 - Plots and recording
+## D4.2 - Plot and record the results
 
-**Prerequisites:** D4.1 running, calibrated and units confirmed.
-
-Record first, then capture an axis-motion and motor-rotation demonstration. Keep the station level; measure stationary drift and describe limitations.
-
-**Terminal B:** Record state, estimates, path and transforms.
+Keep D4.1 running. Start recording before the demonstration in a separate sourced terminal:
 
 ```bash
-ros2 bag record -o bags/d4_run01 /group_7/stm_state /group_7/stm_position /group_7/stm_velocity /group_7/stm_path /tf /tf_static
+mkdir -p bags
+ros2 bag record -o bags/d4_run01 /group_7/stm_state /tf
 ```
 
-**Terminal C:** Plot estimated translation.
+In other sourced terminals, inspect the node and topics and open the graph:
 
 ```bash
-ros2 run rqt_plot rqt_plot /group_7/stm_position/point/x /group_7/stm_position/point/y /group_7/stm_position/point/z
-```
-
-**Terminal D:** Save actual configuration; open graph.
-
-```bash
-mkdir -p deliverables/D4/D4.2
-ros2 param dump /group_7/stm_visualization_node > deliverables/D4/D4.2/parameters.yaml
+ros2 node info /group_7/stm_visualization_node
+ros2 topic list
+ros2 topic echo /group_7/stm_state --once
 rqt_graph
 ```
 
-**Expected:** Position curves and TF/Path correspond to the same timestamped state stream. Document drift instead of claiming absolute accuracy.
+Open plots and select `/group_7/stm_state/motor_encoder` and `/group_7/stm_state/accel_x`:
 
-**Stop:** Ctrl+C recorder, then run `ros2 bag info bags/d4_run01 > deliverables/D4/D4.2/bag-info.txt`. Close plots/graph and stop D4 launch.
+```bash
+ros2 run rqt_plot rqt_plot /group_7/stm_state/motor_encoder /group_7/stm_state/accel_x
+```
 
-**Save:** Plot and RViz screenshots, graph, parameters.yaml, bag-info.txt, video and linked bag. Physical evidence is not collected yet. Save results and links in the matching subtask folder under `deliverables/D4/`.
+Save the graph, plot and RViz screenshots in deliverables/D4/D4.2/. End recording with Ctrl+C, then save recording information and parameters:
+
+```bash
+ros2 bag info bags/d4_run01 > deliverables/D4/D4.2/bag-info.txt
+ros2 param dump /group_7/stm_visualization_node > deliverables/D4/D4.2/parameters.yaml
+```
+
+Use a new bag directory for each run. Keep large bags/videos in the agreed course storage and link them in the test table. Record the tested commit, units, drift and observed rotation direction. Stop the visualization and bridge with Ctrl+C and close RViz/plots/graph. Physical evidence has not been collected yet.
 
 ## Course slides and templates
 
