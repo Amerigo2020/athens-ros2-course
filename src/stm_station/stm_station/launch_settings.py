@@ -6,7 +6,6 @@
 # Team launch/helper code adapts the listed course pattern; no separate numbered scaffold exists.
 """Validation shared by installed launch descriptions (no ROS imports)."""
 
-
 # Team helper for the namespace-building step in the course launch templates.
 def group_namespace(group_id):
     group_id = int(group_id)

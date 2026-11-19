@@ -1,3 +1,5 @@
+# Course basis: Vorlagen 1 + 2, kombiniert; no direct template.
+# Changes: see docs/TEMPLATE_CHANGES.md.
 # Course source: https://github.com/Robolabo/ROS_course
 # Upstream revision: cf9e122904ebcb55d336aa7e82d0760bc94cbb07
 # Template: Templates/1_simple_publisher.py

@@ -5,7 +5,6 @@
 """Educational fixed-axis IMU integration; not an absolute pose estimator."""
 import math
 
-
 # Template 11, steps 2.3 and 3: numerical state extracted from the ROS callback.
 class MotionEstimate:
     def __init__(self, calibration_samples=50, acceleration_scale=1.0,

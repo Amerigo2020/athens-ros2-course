@@ -1,23 +1,13 @@
-# D3 configuration. Group IDs and ports are launch arguments.
-# These parameter names match our implementation, not the upstream TODO YAML.
+/**:
+  ros__parameters:
+    group_id: 7          # <- the only line students change
+
 /**/stm_serial_node:
   ros__parameters:
-    baudrate: 115200
-    loop_frequency: 100.0
-    command_timeout: 0.5
+    serial_port: "/dev/ttyACM0"
+    baud_rate: 115200
 
-/**/stm_control_node:
+/**/stm_control_node_master_slave:
   ros__parameters:
-    state_timeout: 0.5
-    pwm_limit: 25.0
-
-/**/stm_visualization_node:
-  ros__parameters:
-    calibration_samples: 50
-    acceleration_scale: 1.0
-    deadband: 0.5
-    max_dt: 0.2
-    ticks_per_revolution: 24.0
-    gear_ratio: 9.7
-    encoder_direction: 1.0
-    max_path_points: 1000
+    master_group_id: 7
+    slave_group_id: 9

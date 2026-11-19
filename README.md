@@ -1,3 +1,44 @@
+# Vorlagengetreue Kurslösungen
+
+Die Nodes zu den nummerierten Übungen in `src` basieren auf direkten Kopien der Kursvorlagen mit ausgefüllten TODOs. Klassen, Methoden und Ablauf bleiben erhalten; notwendige Korrekturen sind einzeln dokumentiert. Zusatzdateien ohne direkte Vorlage sind separat ausgewiesen. `templates/` bleibt unverändert.
+
+Die vollständige [Zuordnung aller Dateien mit verbleibenden Änderungen](docs/TEMPLATE_CHANGES.md) und der [zeilenweise Vorlagenvergleich](docs/TEMPLATE_DIFF.patch) dokumentieren jede Abweichung.
+
+## Starten
+
+In der ROS-VM bauen und sourcen:
+
+```bash
+colcon build --symlink-install
+source install/setup.bash
+ros2 run stm_station stm_serial_node_pub
+ros2 run stm_station stm_serial_node_pub_sub
+ros2 run stm_station stm_serial_node
+ros2 run stm_station stm_control_node_master_slave
+ros2 run stm_station stm_control_node_master_slave_poscontrol
+ros2 run stm_station stm_control_node_master_slave_impedance_control
+ros2 launch stm_station stm_station_launch.py
+ros2 launch stm_station stm_station_launch_all.py
+```
+
+Die Serial-Stufen einzeln starten. Die Standard-Serial-Stufen verwenden wie die Vorlage den Port `/dev/ttyACM0` im Code; die Custom-Stufe liest für D3 die Parameter `serial_port` und `baud_rate`. Für getrennte Stationen den Namespace mit `--ros-args -r __ns:=/group_7` setzen. Controller-Gruppen werden über `master_group_id` und `slave_group_id` gesetzt. Der Service heißt wie in der Vorlage `set_control_type`; die vorhandene Schnittstelle verwendet `kd` für den in Vorlage 10 `kv` genannten Verstärkungsfaktor. Die Launch-Konfiguration steht in `src/stm_station/config/serial_params.yaml`.
+
+Die zusätzlichen Timeout-, Kalibrierungs- und Konfigurationsfunktionen der vorherigen Implementierung sind in diesen Nodes nicht enthalten. Die bisherigen Tests für diese Hilfsmodule belegen nicht die Funktion der Vorlagenlösungen. ROS-/Hardwaretests stehen aus.
+
+## Notwendige Vorlagenkorrekturen
+
+- Vorlagen 6/7: Die unpassende `control_data`-Zeile im Empfangspfad entfällt; der Zeilenabschluss steht beim Senden in Vorlage 7.
+- Controller: Der Logzugriff verwendet `slave_control_topic`; Parametercallbacks verwenden den neuen `param.value`. Bei Wechsel der Slave-Gruppe wird auch dessen Zustandssubscriber aktualisiert.
+- Vorlage 10: Geschwindigkeiten werden im Zustands-TODO gespeichert; `request.kd` entspricht dem vorhandenen Servicefeld für `kv`.
+- Vorlage 11: Fehlende Ausdrücke für Beschleunigung und Integration ergänzt; TF-Kindframe ohne unzulässigen führenden Slash. Die Vorlage enthält keinen Path-Publisher.
+- Vorlage 4: Fehlenden Import von `SetParametersResult` ergänzt.
+- D1.3: Kopie von Vorlage 7 mit den für die Aufgabe erforderlichen benutzerdefinierten Nachrichten.
+- Vorlage 12: Rad-Radius 0,033 m als TurtleBot3-Annahme im Umrechnungsausdruck; vor Verwendung mit dem tatsächlichen Roboter abgleichen.
+
+Die folgenden bisherigen Aufgabenaufzeichnungen bleiben als Referenz erhalten. Ihre alten Startbefehle und Aussagen über Zusatzfunktionen gelten für die frühere Implementierung; für die aktuellen Nodes gelten die Befehle oben.
+
+---
+
 # Athens ROS 2 - Team WinningLeos
 
 Group 7, ATHENS 2026, UPM Madrid. We use Ubuntu 24.04 and ROS 2 Jazzy in the course VM.
@@ -458,50 +499,33 @@ Use a separate terminal for each running node or recorder. In every terminal, so
 
 ## Configuration
 
-Launch files load the installed serial_params.yaml, which uses our parameter names port and baudrate. Defaults are 115200 baud, 100 Hz polling, 0.5-second timeouts and a host-controller PWM limit of 25.0.
+D3 follows the original course template: the launch reads group_id from the installed config/serial_params.yaml, builds the namespace and passes that YAML to the nodes. Edit that YAML in src/stm_station/config before building. Our group is 7; replace slave_group_id=2 with the actual partner group. Serial settings use the template names serial_port and baud_rate.
 
-To change these settings, copy `src/stm_station/config/serial_params.yaml`, edit it and pass `params_file:=/absolute/path/to/config.yaml`. Restart nodes to apply parameters. Port and group launch arguments override the YAML. Stable /dev/serial/by-id/ paths help avoid swapping stations.
-
-The combined launch puts the controller under the master group, so its service is /group_7/stm_setcontrol_type. The single launch starts the bridge only. Do not start either alongside another bridge using the same device.
+stm_station_launch.py is unchanged from templates/stm_station_launch.py. stm_serial_control_launch.py retains the same template as a compatibility filename. The single-node version only omits the controller. No additional launch arguments or automatic second bridge are used.
 
 <a id="d3-1-0"></a>
 
 ## D3.1.0 - Single-station launch
 
-**Prerequisites:** D1.3 working; manual bridge stopped.
-
-Launch the installed custom serial node using Group 7 namespace.
-
-**Terminal A:** Inspect arguments, then start the station.
+After building and sourcing the workspace, start the serial bridge:
 
 ```bash
-ros2 launch stm_station stm_serial_node_launch.py --show-args
-ros2 launch stm_station stm_serial_node_launch.py group_id:=7 port:=/dev/ttyACM0
+ros2 launch stm_station stm_serial_node_launch.py
 ```
 
-**Terminal B:** Verify the node and YAML parameters.
+In another sourced terminal:
 
 ```bash
 ros2 node info /group_7/stm_serial_node
-ros2 param get /group_7/stm_serial_node baudrate
+ros2 param get /group_7/stm_serial_node baud_rate
 ros2 topic echo /group_7/stm_state --once
 ```
 
-**Expected:** One /group_7/stm_serial_node exists; baudrate is 115200 and state arrives.
-
-**Stop:** Ctrl+C launch; ensure its bridge exits.
-
-**Save:** Argument output, node info, actual parameters and state transcript. Save results and links in the matching subtask folder under `deliverables/D3/`.
+Expected: one bridge, baud_rate=115200 and incoming state. Save node info, parameters and state output in deliverables/D3/D3.1.0/. Stop with Ctrl+C before the combined launch.
 
 <a id="d3-1-1"></a>
 
 ## D3.1.1 - Launch/config installation
-
-**Prerequisites:** Workspace built and sourced; hardware not needed.
-
-Verify packaged launch, YAML and RViz assets independently of the source working directory.
-
-**Terminal A:** Build and inspect installed share files.
 
 ```bash
 colcon build --symlink-install --packages-up-to stm_station
@@ -509,43 +533,32 @@ source install/setup.bash
 ls "$(ros2 pkg prefix --share stm_station)/launch"
 ls "$(ros2 pkg prefix --share stm_station)/config"
 ls "$(ros2 pkg prefix --share stm_station)/rviz"
-(cd /tmp && ros2 launch stm_station stm_serial_node_launch.py --show-args)
+(cd /tmp && ros2 launch stm_station stm_station_launch.py --show-args)
 ```
 
-**Expected:** Four launch files, serial_params.yaml and stm_config.rviz are installed; --show-args succeeds from /tmp.
-
-**Stop:** No device or long-running node is started by --show-args.
-
-**Save:** Build output, installed file listing and successful argument listing outside the workspace. Save results and links in the matching subtask folder under `deliverables/D3/`.
+Expected: launch files, serial_params.yaml and stm_config.rviz are installed. Argument inspection succeeds outside the workspace; the course template declares no launch arguments. Save build and listing output in deliverables/D3/D3.1.1/.
 
 <a id="d3-2"></a>
 
 ## D3.2 - Combined launch
 
-**Prerequisites:** Both USB devices available locally, or partner bridge running on the same ROS network. Stop manual bridges/controllers first.
-
-Use the local-two-device example below. For a remote partner set start_slave:=false and let the partner start its bridge; do not launch two bridges for one station.
-
-**Terminal A:** Launch both bridges and the controller; partner 2 must be replaced if different.
+Stop the single bridge first. The partner starts its own bridge on the same ROS network using its own group ID and device configuration. This launch starts our bridge and the master/slave controller:
 
 ```bash
-ros2 launch stm_station stm_serial_control_launch.py master_group_id:=7 slave_group_id:=2 master_port:=/dev/ttyACM0 start_slave:=true slave_port:=/dev/ttyACM1
+ros2 launch stm_station stm_station_launch.py
 ```
 
-**Terminal B:** Check namespaced controller and stop service.
+In another sourced terminal:
 
 ```bash
 ros2 node list
-ros2 param get /group_7/stm_control_node pwm_limit
-ros2 service call /group_7/stm_setcontrol_type stm_interfaces/srv/STMSetControlType "{control_type: 0, kp: 0.0, kd: 0.0}"
+ros2 param get /group_7/stm_control_node_master_slave master_group_id
+ros2 param get /group_7/stm_control_node_master_slave slave_group_id
+ros2 service call /group_7/set_control_type stm_interfaces/srv/STMSetControlType "{control_type: 0, kp: 0.0, kd: 0.0}"
 rqt_graph
 ```
 
-**Expected:** Two bridges plus /group_7/stm_control_node; pwm_limit=25.0; namespaced stop service returns success=true. Starts in stop.
-
-**Stop:** Keep controller in stop, Ctrl+C launch, close graph; stop a separately started partner bridge when finished.
-
-**Save:** Graph, node/parameter/service output, arguments and observed process/motor stop. Save results and links in the matching subtask folder under `deliverables/D3/`.
+Expected: our bridge and controller, partner bridge visible on the ROS network, configured group IDs and successful stop service. Save graph, parameters and service output in deliverables/D3/D3.2/. Stop with Ctrl+C and verify that the launched processes exit.
 
 ## Course slides and templates
 

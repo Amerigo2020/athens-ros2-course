@@ -3,11 +3,7 @@
 # Template: Templates/6_stm_serial_node_pub.py
 # Template: Templates/7_stm_serial_node_pub_sub.py
 # DONE marks code implementation, not a successful ROS/hardware test.
-"""Runnable D1.1 and D1.2 checkpoints using standard ROS messages.
-
-These are reconstructed exercise stages sharing the D1.3 serial transport,
-not historical claims about when the team completed an assignment.
-"""
+"""Runnable D1.1 and D1.2 checkpoints using standard ROS messages."""
 from std_msgs.msg import Float32MultiArray
 
 from .protocol import FIELDS, standard_control_values
